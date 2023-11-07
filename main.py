@@ -20,7 +20,7 @@ if __name__ == "__main__":
     login_password = loging_creating_changing_functions_for_pages.CheckLoginPassword()
     engine.rootContext().setContextProperty('check_login_password', login_password)
 
-    engine.load(os.path.join(os.path.dirname(__file__), "pages/Flow_app.qml"))
+    engine.load(os.path.join(os.path.dirname(__file__), "qml_file/Flow_app.qml"))
     if not engine.rootObjects():
         sys.exit(-1)
     sys.exit(app.exec())

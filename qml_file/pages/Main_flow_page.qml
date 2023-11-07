@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import '../my_components'
+import '../../my_components'
 
 Rectangle{
     id: main_flow_page

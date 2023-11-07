@@ -58,7 +58,7 @@ Rectangle {
                     height: parent.height
                     fillMode: Image.PreserveAspectFit
                     mipmap: true
-                    source: '../' + window.minimize_button_image_source
+                    source: '../../' + window.minimize_button_image_source
 
                 }
 
@@ -90,7 +90,7 @@ Rectangle {
                     height: parent.height
                     fillMode: Image.PreserveAspectFit
                     mipmap: true
-                    source: '../' + window.close_button_image_source
+                    source: '../../' + window.close_button_image_source
 
                 }
                 MouseArea {
