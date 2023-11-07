@@ -104,8 +104,6 @@ ApplicationWindow{
     Component {
         id: log_page
         Log_in_page{id: l_page}
-
-
     }
 
     Component {
