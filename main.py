@@ -4,6 +4,9 @@ from PySide6.QtQml import QQmlApplicationEngine, QmlElement, qmlRegisterType
 import sys
 import os
 import loging_creating_changing_functions_for_pages
+import set_operations
+
+
 QML_IMPORT_NAME = 'io.qt.textproperties'
 QML_IMPORT_MAJOR_VERSION = 1
 
@@ -19,6 +22,9 @@ if __name__ == "__main__":
 
     login_password = loging_creating_changing_functions_for_pages.CheckLoginPassword()
     engine.rootContext().setContextProperty('check_login_password', login_password)
+
+    set_op = set_operations.InsertSet()
+    engine.rootContext().setContextProperty('set_op', set_op)
 
     engine.load(os.path.join(os.path.dirname(__file__), "qml_file/Flow_app.qml"))
     if not engine.rootObjects():

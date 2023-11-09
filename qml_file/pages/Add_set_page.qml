@@ -141,9 +141,18 @@ Rectangle{
                         submit_add_card_button.color = '#ffffff'
                     }
                     onClicked: {
-                        animation_pup_up.running = true
-                        animation_timer.running = true
+                        set_op.insert_set_cards([add_set_name.text, question.text, answer.text])
                     }
+                }
+            }
+        }
+        Connections {
+            target: set_op
+
+            function onInsert_set(stringText){
+                if (stringText = 'true'){
+                    animation_pup_up.running = true
+                    animation_timer.running = true
                 }
             }
         }

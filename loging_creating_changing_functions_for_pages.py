@@ -1,6 +1,7 @@
 QML_IMPORT_NAME = 'io.qt.textproperties'
 QML_IMPORT_MAJOR_VERSION = 1
 import mysql.connector
+import user_basic_info
 
 mydb = mysql.connector.connect(
     host='localhost',
@@ -26,11 +27,12 @@ class CheckForValidLoginPassword(QObject):
         t = t.split(',')
         login = t[0]
         password = t[1]
-        query = 'SELECT user_login, user_password FROM user WHERE user_login = %s and user_password = %s'
+        query = 'SELECT id, user_login, user_password FROM user WHERE user_login = %s and user_password = %s'
         mycursor.execute(query, (login, password,))
         result = mycursor.fetchone()
         if result is not None:
             self.response.emit('found')
+            user_basic_info.UserData.user_id = result[0]
         else:
             self.response.emit('not found')
 
