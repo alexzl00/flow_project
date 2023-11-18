@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import 'pages'
+import MyModel_py 1.0
 
 
 
@@ -36,8 +37,6 @@ ApplicationWindow{
                 window.maximize_restore_button_image_source = "images/maximize_button.png"
             }
         }
-
-
     }
 
     MouseArea {
@@ -100,30 +99,29 @@ ApplicationWindow{
                 easing.type: Easing.OutCubic
             }
         }
-    }
+        Component {
+            id: log_page
+            Log_in_page{id: l_page}
+        }
 
-    Component {
-        id: log_page
-        Log_in_page{id: l_page}
-    }
+        Component {
+            id: create_account_page
+            Create_account_page{id: c_page}
+        }
 
-    Component {
-        id: create_account_page
-        Create_account_page{id: c_page}
-    }
+        Component {
+            id: main_flow_page
+            Main_flow_page {id: main_program_page}
+        }
 
-    Component {
-        id: main_flow_page
-        Main_flow_page {id: main_program_page}
-    }
-
-    Component {
-        id: learning_page
-        Learning_page {id: learning_page}
-    }
-    Component {
-        id: add_set_page
-        Add_set_page {id: add_set_page}
+        Component {
+            id: learning_page
+            Learning_page {id: learning_page}
+        }
+        Component {
+            id: add_set_page
+            Add_set_page {id: add_set_page}
+        }
     }
 
 }

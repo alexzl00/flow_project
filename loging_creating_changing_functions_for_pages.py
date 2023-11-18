@@ -1,3 +1,7 @@
+import set_operations
+
+
+
 QML_IMPORT_NAME = 'io.qt.textproperties'
 QML_IMPORT_MAJOR_VERSION = 1
 import mysql.connector
@@ -33,6 +37,7 @@ class CheckForValidLoginPassword(QObject):
         if result is not None:
             self.response.emit('found')
             user_basic_info.UserData.user_id = result[0]
+            set_operations.LoadUserSets(user_basic_info.UserData.user_id).load_data()
         else:
             self.response.emit('not found')
 

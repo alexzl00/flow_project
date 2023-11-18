@@ -1,9 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from PySide6.QtCore import QObject, Slot, Signal
 
 
-@dataclass(frozen=True)
+@dataclass()
 class UserData:
     user_id: int
+    user_sets: dict
 
 
