@@ -1,6 +1,5 @@
-from PySide6 import QtQml
 from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot
-from PySide6.QtQml import QmlElement, qmlRegisterType
+from PySide6.QtQml import QmlElement
 
 import user_basic_info
 
@@ -11,14 +10,11 @@ QML_IMPORT_MINOR_VERSION = 0
 
 @QmlElement
 class MyModel(QAbstractListModel):
-
     RatioRole = Qt.UserRole + 1
 
     def __init__(self):
         super().__init__()
-        # self._data = [key for key, value in getattr(user_basic_info.UserData.user_sets)]
-        self._data = ['item 1', 'item 2']
-        # self._data = []
+        self._data = []
 
     def rowCount(self, parent=QModelIndex()) -> int:
         return len(self._data)
@@ -35,12 +31,10 @@ class MyModel(QAbstractListModel):
             return data
 
     @Slot(result=bool)
-    def append(self, parent=QModelIndex()):
-        new_data = []
+    def update(self, parent=QModelIndex()):
+        new_data = user_basic_info.UserData.user_sets.keys()
         position = self.rowCount()
-        for key, value in user_basic_info.UserData.user_sets:
-            if key not in self._data:
-                new_data.append(key)
+
         if len(new_data) > 0:
             self.beginInsertRows(parent, position, position + len(new_data)-1)
             for i in new_data:
@@ -48,16 +42,15 @@ class MyModel(QAbstractListModel):
             self.endInsertRows()
         return True
 
-    # @Slot(result=bool)
-    # def append(self):
-    #     return self.insertRow(self.rowCount())
-    #
-    # def insertRow(self, row: int, parent=QModelIndex()):
-    #     return self.insertRows(row, 0)
-    #
-    # def insertRows(self, row: int, count, index=QModelIndex()):
-    #     self.beginInsertRows(index, row, row + count)
-    #     for i in range(count+1):
-    #         self._data.insert(row, 'new')
-    #     self.endInsertRows()
-    #     return True
+    @Slot(str, result=bool)
+    def wordlist_of_set(self, set_name):
+        parent = QModelIndex()
+        new_data = user_basic_info.UserData.user_sets[set_name]
+        position = self.rowCount()
+
+        if len(new_data) > 0:
+            self.beginInsertRows(parent, position, position + len(new_data)-1)
+            for i in new_data:
+                self._data.insert(position, f'question: {i[1]}\n answer: {i[2]}')
+            self.endInsertRows()
+        return True

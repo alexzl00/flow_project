@@ -5,7 +5,6 @@ import sys
 import os
 import loging_creating_changing_functions_for_pages
 import set_operations
-import setsModel
 
 QML_IMPORT_NAME = 'io.qt.textproperties'
 QML_IMPORT_MAJOR_VERSION = 1

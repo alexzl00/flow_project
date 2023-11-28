@@ -17,6 +17,8 @@ Rectangle {
     property string exercise_button: '../images/exercise_button.png'
     property string add_set_button: '../images/add_set_button.png'
 
+    property int drawer_animation_duration: 1000
+
 
     ColumnLayout{
         id: drawer_layout
@@ -28,7 +30,7 @@ Rectangle {
             target: drawer
             property: 'width'
             to: if(drawer.width == window.width * 0.1) return window.width * 0.2; else return window.width * 0.1
-            duration: 1000
+            duration: drawer.drawer_animation_duration
             easing.type: Easing.InOutQuint
         }
 
@@ -63,6 +65,8 @@ Rectangle {
 
                 onClicked: {
                     animation_menu.running = true
+                    menu_area.enabled = false
+                    drawer_animation_timer.running = true
                     if (drawer.is_drawn === true){
                         drawer.is_drawn = false
                     }
@@ -70,6 +74,16 @@ Rectangle {
                         drawer.is_drawn = true
                     }
                 }
+            }
+        }
+        Timer {
+            id: drawer_animation_timer
+            interval: drawer.drawer_animation_duration
+            running: false
+            repeat: false
+
+            onTriggered: {
+                menu_area.enabled = true
             }
         }
         Rectangle {

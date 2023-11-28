@@ -32,6 +32,14 @@ class InsertSet(QObject):
         set_name = set_card[0]
         question = set_card[1]
         answer = set_card[2]
+        try:
+            user_basic_info.UserData.user_sets[set_name].append((set_name, question, answer))
+        except KeyError:
+            user_basic_info.UserData.user_sets[set_name] = [(set_name, question, answer)]
+
+        for key, value in user_basic_info.UserData.user_sets.items():
+            print(key, value)
+
         query = 'INSERT INTO word_sets(user_id, set_name, question, answer) VALUES(%s, %s, %s, %s)'
         mycursor.execute(query, (user_basic_info.UserData.user_id, set_name, question, answer))
         mydb.commit()
@@ -46,10 +54,10 @@ class LoadUserSets:
         query = 'select set_name, question, answer from word_sets where user_id = %s'
         mycursor.execute(query, (self.user_id,))
         result = mycursor.fetchall()
-        grouped = groupby(result, key=lambda x: x[0])
-        # for key, value in grouped:
-        #     print(key, list(value))
-        user_basic_info.UserData.user_sets = grouped
+        result.sort(key=lambda x: x[0])
+        grouped = ((key, list(group)) for key, group in groupby(result, key=lambda x: x[0]))
+        user_basic_info.UserData.user_sets = dict(grouped)
+
 
 # class SetUserSetsModel(QObject):
 #     def __init__(self):

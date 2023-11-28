@@ -123,5 +123,4 @@ ApplicationWindow{
             Add_set_page {id: add_set_page}
         }
     }
-
 }
