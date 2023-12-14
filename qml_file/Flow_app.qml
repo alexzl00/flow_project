@@ -6,6 +6,7 @@ import MyModel_py 1.0
 
 
 
+
 ApplicationWindow{
     id: window
     width: 400
@@ -22,6 +23,9 @@ ApplicationWindow{
     property string maximize_restore_button_image_source: "images/maximize_button.png"
     property string minimize_button_image_source: "images/minimize_button.png"
     property string close_button_image_source: "images/close_button.png"
+
+    //this is the property of the chosen set from learning_page in order to implement it in other StackView components
+    property string chosen_set_of_cards: ""
 
     QtObject{
         id: internal
@@ -118,6 +122,11 @@ ApplicationWindow{
             id: learning_page
             Learning_page {id: learning_page}
         }
+        Component {
+            id: test_page
+            Test_page {id: test_page}
+        }
+
         Component {
             id: add_set_page
             Add_set_page {id: add_set_page}

@@ -1,4 +1,6 @@
-from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot
+import dataclasses
+
+from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot, QObject, Signal
 from PySide6.QtQml import QmlElement
 
 import user_basic_info
@@ -54,3 +56,22 @@ class MyModel(QAbstractListModel):
                 self._data.insert(position, f'question: {i[1]}\n answer: {i[2]}')
             self.endInsertRows()
         return True
+
+
+# @dataclasses.dataclass()
+# class CurrentIndexOfSet(QObject):
+#     index: str
+#
+#     get_current_index = Signal(str)
+#
+#     @Slot(str)
+#     def set_index(self, index_of_set):
+#         self.index = index_of_set
+#
+
+@QmlElement
+class LoadNewCard(QObject):
+
+    @Slot(str, result=str)
+    def load_new_card(self, index_of_set, index):
+        return user_basic_info.UserData.user_sets[index_of_set][index]

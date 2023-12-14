@@ -32,13 +32,11 @@ class InsertSet(QObject):
         set_name = set_card[0]
         question = set_card[1]
         answer = set_card[2]
+
         try:
             user_basic_info.UserData.user_sets[set_name].append((set_name, question, answer))
         except KeyError:
             user_basic_info.UserData.user_sets[set_name] = [(set_name, question, answer)]
-
-        for key, value in user_basic_info.UserData.user_sets.items():
-            print(key, value)
 
         query = 'INSERT INTO word_sets(user_id, set_name, question, answer) VALUES(%s, %s, %s, %s)'
         mycursor.execute(query, (user_basic_info.UserData.user_id, set_name, question, answer))

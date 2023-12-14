@@ -27,9 +27,11 @@ Rectangle {
             mouseYPosition = mouse.y
         }
         onPositionChanged: {
-            window.windowStatus = 0
             window.showNormal()
-            window.maximize_restore_button_image_source = "images/maximize_button.png"
+            if (window.windowStatus === 1) {
+                window.maximize_restore_button_image_source = "images/maximize_button.png"}
+            window.windowStatus = 0
+
             window.x = window.x - (mouseXPosition - mouse.x)
             window.y = window.y - (mouseYPosition - mouse.y)
         }
