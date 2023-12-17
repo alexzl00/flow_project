@@ -11,6 +11,7 @@ Rectangle{
     implicitHeight: parent
 
     property string test_button_png: "../../images/test_button.png"
+    property int choose_test_rec_preferable_height: learning_page.height * 0.2
 
     gradient: Gradient{
         GradientStop{position: 0.0; color: '#5cdb95'}
@@ -129,6 +130,7 @@ Rectangle{
             id: learn_cards_button
             implicitWidth: learning_page.width * 0.1
             implicitHeight: learning_page.height * 0.07
+            visible: view_of_cards.visible
             color: '#ffffff'
             radius: 10
             Text {
@@ -152,6 +154,7 @@ Rectangle{
 
                 onClicked: {
                     choose_test_rec_animation.running = true
+                    outside_choose_test_rec.enabled = true
                 }
             }
         }
@@ -160,8 +163,8 @@ Rectangle{
         id: choose_test_rec_animation
         target: choose_test_rec
         property: 'height'
-        to: if (choose_test_rec.height == parent.height * 0.2) return 0; else return parent.height * 0.2
-        duration: if (choose_test_rec.height == parent.height * 0.2) return 300; else return 1000
+        to: if (choose_test_rec.height > 0) return 0; else return choose_test_rec_preferable_height
+        duration: if (choose_test_rec.height > 0) return 300; else return 1000
         easing.type: Easing.OutExpo
     }
 
@@ -226,14 +229,16 @@ Rectangle{
     MouseArea {
         id: outside_choose_test_rec
         anchors.fill: learning_page
-        enabled: if(choose_test_rec.height == 0) false; else true
+        enabled: false
         onClicked: {
             var rect = choose_test_rec.mapToItem(parent, 0, 0)
             var rectWidth = choose_test_rec.width
             var rectHeight = choose_test_rec.height
 
-            if (mouse.x < rect.x || mouse.x > rect.x + rectWidth || mouse.y < rect.y || mouse.y > rect.y + rectHeight){
+            if ((mouse.x < rect.x || mouse.x > rect.x + rectWidth || mouse.y < rect.y || mouse.y > rect.y + rectHeight)
+            && choose_test_rec_preferable_height === choose_test_rec.height){
                 choose_test_rec_animation.running = true
+                outside_choose_test_rec.enabled = false
             }
         }
     }

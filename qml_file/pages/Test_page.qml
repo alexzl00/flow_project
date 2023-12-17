@@ -34,24 +34,72 @@ Rectangle {
         radius: 10
         clip: true
 
+        Text {
+            id: show_hide_answer_text
+            leftPadding: 10
+            rightPadding: 10
+            bottomPadding: 10
+            topPadding: 10
+            anchors.right: parent.right
+            anchors.top: parent.top
+            text: 'Show answer'
+            font.family: "Arial"
+            font.pixelSize: 16
+            z: 3
+            MouseArea {
+                id: show_hide_answer_text_area
+                height: show_hide_answer_text.height
+                width: show_hide_answer_text.width
+                hoverEnabled: true
+
+                onEntered: {
+                    show_hide_answer_text.color = "blue"
+                    show_hide_answer_text.font.underline = true
+                }
+
+                onExited: {
+                    show_hide_answer_text.color = "black"
+                    show_hide_answer_text.font.underline = false
+                }
+                onClicked: {
+                    view_of_cards.answer_visible = false
+                }
+
+            }
+        }
+
+
+
+
+
         SwipeView {
             id: view_of_cards
             interactive: true
             currentIndex: 0
             anchors.fill: parent
+            property bool answer_visible: true
 
             Repeater{
                 id: repeater
-                model: MyModel {}
+                model: CardForTest {}
                 Loader {
                     active: SwipeView.isCurrentItem || SwipeView.isNextItem || SwipeView.isPreviousItem
                     Rectangle {
                         width: parent.width
                         height: parent.height
                         color: 'transparent'
-                        Text {
+                        Column {
+                            spacing: 10
                             anchors.centerIn: parent
-                            text: display
+                            Text {
+                                id: question
+                                text: model.question
+                            }
+                            Text {
+                                id: answer
+                                text: model.answer
+                                visible: view_of_cards.answer_visible
+                            }
                         }
                     }
                 }
@@ -59,36 +107,6 @@ Rectangle {
 
         }
     }
-/*
-    SwipeView {
-        id: view_of_cards
-        anchors.centerIn: parent
-        interactive: true
-        currentIndex: 0
-        implicitWidth: test_page.width * 0.3
-        implicitHeight: test_page.height * 0.5
-
-        Repeater{
-            id: repeater
-            model: MyModel {}
-            delegate: Item {
-                height: view_of_cards.height
-                width: view_of_cards.width
-
-                Rectangle {
-                    implicitWidth: parent.width
-                    implicitHeight: parent.height
-                    color: '#ffffff'
-                    radius: 10
-                    Text {
-                        anchors.centerIn: parent
-                        text: display
-                    }
-                }
-            }
-        }
-    }
-*/
 
     RowLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -231,5 +249,5 @@ Rectangle {
         }
 
     }
-    Component.onCompleted: {repeater.model.wordlist_of_set(window.chosen_set_of_cards) }
+
 }

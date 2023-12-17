@@ -12,7 +12,6 @@ QML_IMPORT_MINOR_VERSION = 0
 
 @QmlElement
 class MyModel(QAbstractListModel):
-    RatioRole = Qt.UserRole + 1
 
     def __init__(self):
         super().__init__()
@@ -28,6 +27,7 @@ class MyModel(QAbstractListModel):
     def data(self, index: QModelIndex, role=Qt.DisplayRole):
         if not self._data:
             return None
+
         elif role == Qt.DisplayRole:
             data = self._data[index.row()]
             return data
@@ -58,16 +58,35 @@ class MyModel(QAbstractListModel):
         return True
 
 
-# @dataclasses.dataclass()
-# class CurrentIndexOfSet(QObject):
-#     index: str
-#
-#     get_current_index = Signal(str)
-#
-#     @Slot(str)
-#     def set_index(self, index_of_set):
-#         self.index = index_of_set
-#
+@QmlElement
+class CardForTest(QAbstractListModel):
+    question = Qt.UserRole + 1
+    answer = Qt.UserRole + 2
+
+    def __init__(self):
+        super().__init__()
+        self._data = [{'question': '1', 'answer': '2'}]
+
+    def rowCount(self, parent=QModelIndex()) -> int:
+        return len(self._data)
+
+    def roleNames(self):
+        roles = {self.question: b'question', self.answer: b'answer'}
+        return roles
+
+    def data(self, index: QModelIndex, role=Qt.DisplayRole):
+        if not self._data:
+            return None
+        if role == self.question:
+            return self._data[index.row()]["question"]
+        if role == self.answer:
+            return self._data[index.row()]["answer"]
+
+    @Slot(int, result='QVariant')
+    def cards_for_test(self, row):
+        return self._data[row]
+
+
 
 @QmlElement
 class LoadNewCard(QObject):
