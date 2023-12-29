@@ -1,9 +1,12 @@
 import dataclasses
+import threading
 
 from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot, QObject, Signal
 from PySide6.QtQml import QmlElement
 
 import user_basic_info
+
+import pyttsx3
 
 QML_IMPORT_NAME = 'MyModel_py'
 QML_IMPORT_MAJOR_VERSION = 1
@@ -65,7 +68,7 @@ class CardForTest(QAbstractListModel):
 
     def __init__(self):
         super().__init__()
-        self._data = [{'question': '1', 'answer': '2'}]
+        self._data = []
 
     def rowCount(self, parent=QModelIndex()) -> int:
         return len(self._data)
@@ -78,14 +81,40 @@ class CardForTest(QAbstractListModel):
         if not self._data:
             return None
         if role == self.question:
-            return self._data[index.row()]["question"]
+            return self._data[index.row()][0]
         if role == self.answer:
-            return self._data[index.row()]["answer"]
+            return self._data[index.row()][1]
 
-    @Slot(int, result='QVariant')
-    def cards_for_test(self, row):
-        return self._data[row]
+    @Slot(str, result=bool)
+    def cards_for_test(self, set_name):
+        parent = QModelIndex()
+        new_data = user_basic_info.UserData.user_sets[set_name]
+        position = self.rowCount()
 
+        if len(new_data) > 0:
+            self.beginInsertRows(parent, position, position + len(new_data)-1)
+            for i in new_data:
+                self._data.insert(position, (f'question: {i[1]}', f'answer: {i[2]}'))
+            self.endInsertRows()
+        return True
+
+    @staticmethod
+    def text_to_speech_separate_thread(text):
+        engine = pyttsx3.init()
+
+        engine.setProperty('rate', 140)
+        engine.setProperty('volume', 0.7)
+
+        engine.say(text)
+        engine.runAndWait()
+
+    @Slot(str)
+    def text_to_speech(self, row):
+
+        text = self._data[int(row)][1]
+
+        t1 = threading.Thread(target=self.text_to_speech_separate_thread, args=[text])
+        t1.start()
 
 
 @QmlElement

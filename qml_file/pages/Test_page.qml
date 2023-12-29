@@ -62,14 +62,51 @@ Rectangle {
                     show_hide_answer_text.font.underline = false
                 }
                 onClicked: {
-                    view_of_cards.answer_visible = false
+                    if(view_of_cards.answer_visible === false) {
+                        view_of_cards.answer_visible = true
+                        show_hide_answer_text.text = "Hide answer"
+                    }
+                    else {
+                        view_of_cards.answer_visible = false
+                        show_hide_answer_text.text = 'Show answer'
+                    }
                 }
 
             }
         }
 
+        Rectangle {
+            id: play_sound_button
+            implicitWidth: test_page.width * 0.08
+            implicitHeight: test_page.height * 0.08
+            color: 'salmon'
+            radius: 10
+            z: 3
 
+            Text {
+                id: play_sound_button_text
+                anchors.centerIn: play_sound_button
+                text: 'play sound'
+            }
 
+            MouseArea {
+                id: play_sound_button_area
+                anchors.fill: play_sound_button
+                hoverEnabled: true
+
+                onEntered: {
+                    play_sound_button.color = '#C0C0C0'
+
+                }
+                onExited: {
+                    play_sound_button.color = 'salmon'
+                }
+
+                onClicked: {
+                    repeater.model.text_to_speech(view_of_cards.currentIndex)
+                }
+            }
+        }
 
 
         SwipeView {
@@ -77,7 +114,12 @@ Rectangle {
             interactive: true
             currentIndex: 0
             anchors.fill: parent
-            property bool answer_visible: true
+            property bool answer_visible: false
+
+            onCurrentIndexChanged: {
+                view_of_cards.answer_visible = false
+                show_hide_answer_text.text = 'Show answer'
+            }
 
             Repeater{
                 id: repeater
@@ -85,6 +127,7 @@ Rectangle {
                 Loader {
                     active: SwipeView.isCurrentItem || SwipeView.isNextItem || SwipeView.isPreviousItem
                     Rectangle {
+                        id: text_container
                         width: parent.width
                         height: parent.height
                         color: 'transparent'
@@ -94,10 +137,14 @@ Rectangle {
                             Text {
                                 id: question
                                 text: model.question
+                                width: text_container.width * 0.8
+                                wrapMode: Text.WordWrap
                             }
                             Text {
                                 id: answer
                                 text: model.answer
+                                width: text_container.width * 0.8
+                                wrapMode: Text.WordWrap
                                 visible: view_of_cards.answer_visible
                             }
                         }
@@ -249,5 +296,6 @@ Rectangle {
         }
 
     }
+    Component.onCompleted: repeater.model.cards_for_test(window.chosen_set_of_cards)
 
 }

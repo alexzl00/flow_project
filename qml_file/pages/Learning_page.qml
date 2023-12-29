@@ -37,7 +37,7 @@ Rectangle{
         delegate: Item{
             implicitWidth: parent.width
             // it doesnt work parent.height, so learning_page.height (main rectangle's height) should be passed
-            implicitHeight: learning_page.height * 0.1
+            implicitHeight: Math.max(learning_page.height * 0.1, list_view_item_text.contentHeight)
             Rectangle{
                 id: list_view_item
                 radius: 20
@@ -49,6 +49,8 @@ Rectangle{
                     id: list_view_item_text
                     text: display
                     anchors.centerIn: parent
+                    width: parent.width * 0.8
+                    wrapMode: Text.WordWrap
                 }
 
                 MouseArea {
@@ -101,8 +103,10 @@ Rectangle{
 
                 Text {
                     id: cards_view_item_text
+                    width: parent.width * 0.8
                     text: display
                     anchors.centerIn: parent
+                    wrapMode: Text.WordWrap
                 }
 
                 MouseArea {
