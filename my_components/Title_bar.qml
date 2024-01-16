@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-
+import TrackUserScreenTime 1.0
 
 
 Rectangle {
@@ -131,9 +131,14 @@ Rectangle {
                     close_button.color = 'transparent'
                 }
                 onClicked: {
+                    track_user_screen_session.end_session()
                     window.close()
                 }
             }
+        }
+
+        TrackUserScreenTime {
+            id: track_user_screen_session
         }
 
     }

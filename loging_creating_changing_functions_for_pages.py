@@ -1,11 +1,11 @@
 import set_operations
-
-
+import mysql.connector
+import user_basic_info
+from PySide6.QtCore import QObject, Slot, Signal
 
 QML_IMPORT_NAME = 'io.qt.textproperties'
 QML_IMPORT_MAJOR_VERSION = 1
-import mysql.connector
-import user_basic_info
+
 
 mydb = mysql.connector.connect(
     host='localhost',
@@ -15,8 +15,6 @@ mydb = mysql.connector.connect(
 )
 
 mycursor = mydb.cursor()
-
-from PySide6.QtCore import QObject, Slot, Signal
 
 
 class CheckForValidLoginPassword(QObject):

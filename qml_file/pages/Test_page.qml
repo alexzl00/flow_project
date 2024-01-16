@@ -25,133 +25,188 @@ Rectangle {
         id: drawer
     }
 
-    Rectangle {
-        id: rec_for_view
-        implicitWidth: test_page.width * 0.3
-        implicitHeight: test_page.height * 0.5
+
+    ColumnLayout {
         anchors.centerIn: parent
-        color: '#ffffff'
-        radius: 10
-        clip: true
+        spacing: 20
 
-        Text {
-            id: show_hide_answer_text
-            leftPadding: 10
-            rightPadding: 10
-            bottomPadding: 10
-            topPadding: 10
-            anchors.right: parent.right
-            anchors.top: parent.top
-            text: 'Show answer'
-            font.family: "Arial"
-            font.pixelSize: 16
-            z: 3
-            MouseArea {
-                id: show_hide_answer_text_area
-                height: show_hide_answer_text.height
-                width: show_hide_answer_text.width
-                hoverEnabled: true
+        Rectangle {
+            id: custom_result_indicator_rec
+            implicitHeight: test_page.height * 0.01
+            implicitWidth: test_page.width * 0.3
 
-                onEntered: {
-                    show_hide_answer_text.color = "blue"
-                    show_hide_answer_text.font.underline = true
-                }
+            property int number_of_cards: view_of_cards.count
 
-                onExited: {
-                    show_hide_answer_text.color = "black"
-                    show_hide_answer_text.font.underline = false
-                }
-                onClicked: {
-                    if(view_of_cards.answer_visible === false) {
-                        view_of_cards.answer_visible = true
-                        show_hide_answer_text.text = "Hide answer"
-                    }
-                    else {
-                        view_of_cards.answer_visible = false
-                        show_hide_answer_text.text = 'Show answer'
-                    }
-                }
+            property list<int> list_of_green: []
+            property list<int> list_of_orange: []
+            property list<int> list_of_red: []
 
+            CustomPaintedItem {
+                id: custom_result_indicator
+                anchors.fill: parent
             }
+
         }
 
         Rectangle {
-            id: play_sound_button
-            implicitWidth: test_page.width * 0.08
-            implicitHeight: test_page.height * 0.08
-            color: 'salmon'
+            id: rec_for_view
+            implicitWidth: test_page.width * 0.3
+            implicitHeight: test_page.height * 0.5
+
+            color: '#ffffff'
             radius: 10
-            z: 3
+            clip: true
 
             Text {
-                id: play_sound_button_text
-                anchors.centerIn: play_sound_button
-                text: 'play sound'
-            }
+                id: show_hide_answer_text
+                leftPadding: 10
+                rightPadding: 10
+                bottomPadding: 10
+                topPadding: 10
+                anchors.right: parent.right
+                anchors.top: parent.top
+                text: 'Show answer'
+                font.family: "Arial"
+                font.pixelSize: 16
+                z: 3
 
-            MouseArea {
-                id: play_sound_button_area
-                anchors.fill: play_sound_button
-                hoverEnabled: true
+                MouseArea {
+                    id: show_hide_answer_text_area
+                    height: show_hide_answer_text.height
+                    width: show_hide_answer_text.width
+                    hoverEnabled: true
 
-                onEntered: {
-                    play_sound_button.color = '#C0C0C0'
+                    onEntered: {
+                        show_hide_answer_text.color = "blue"
+                        show_hide_answer_text.font.underline = true
+                    }
+
+                    onExited: {
+                        show_hide_answer_text.color = "black"
+                        show_hide_answer_text.font.underline = false
+                    }
+                    onClicked: {
+                        if(view_of_cards.answer_visible === false) {
+                            view_of_cards.answer_visible = true
+                            show_hide_answer_text.text = "Hide answer"
+                        }
+                        else {
+                            view_of_cards.answer_visible = false
+                            show_hide_answer_text.text = 'Show answer'
+                        }
+                    }
 
                 }
-                onExited: {
-                    play_sound_button.color = 'salmon'
-                }
-
-                onClicked: {
-                    repeater.model.text_to_speech(view_of_cards.currentIndex)
-                }
-            }
-        }
-
-
-        SwipeView {
-            id: view_of_cards
-            interactive: true
-            currentIndex: 0
-            anchors.fill: parent
-            property bool answer_visible: false
-
-            onCurrentIndexChanged: {
-                view_of_cards.answer_visible = false
-                show_hide_answer_text.text = 'Show answer'
             }
 
-            Repeater{
-                id: repeater
-                model: CardForTest {}
-                Loader {
-                    active: SwipeView.isCurrentItem || SwipeView.isNextItem || SwipeView.isPreviousItem
-                    Rectangle {
-                        id: text_container
-                        width: parent.width
-                        height: parent.height
-                        color: 'transparent'
-                        Column {
-                            spacing: 10
-                            anchors.centerIn: parent
-                            Text {
-                                id: question
-                                text: model.question
-                                width: text_container.width * 0.8
-                                wrapMode: Text.WordWrap
-                            }
-                            Text {
-                                id: answer
-                                text: model.answer
-                                width: text_container.width * 0.8
-                                wrapMode: Text.WordWrap
-                                visible: view_of_cards.answer_visible
+            Rectangle {
+                id: play_sound_button
+                implicitWidth: test_page.width * 0.08
+                implicitHeight: test_page.height * 0.08
+                color: 'salmon'
+                radius: 10
+                z: 3
+
+                Text {
+                    id: play_sound_button_text
+                    anchors.centerIn: play_sound_button
+                    text: 'play sound'
+                }
+
+                MouseArea {
+                    id: play_sound_button_area
+                    anchors.fill: play_sound_button
+                    hoverEnabled: true
+
+                    onEntered: {
+                        play_sound_button.color = '#C0C0C0'
+
+                    }
+                    onExited: {
+                        play_sound_button.color = 'salmon'
+                    }
+
+                    onClicked: {
+                        repeater.model.text_to_speech(view_of_cards.currentIndex)
+                    }
+                }
+            }
+
+            // indicates what was your previous answer an that question
+            Rectangle {
+                id: result_indicator_color
+                implicitHeight: parent.height * 0.1
+                implicitWidth: result_indicator_color.height
+                radius: result_indicator_color.height / 2
+
+                color: custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(0).green :
+                       custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(1).orange :
+                       custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(2).red :
+                       colorModel.get(3).grey
+
+
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottomMargin: 10
+            }
+
+
+            SwipeView {
+                id: view_of_cards
+                interactive: true
+                currentIndex: 0
+                anchors.fill: parent
+                property bool answer_visible: false
+
+                onCurrentIndexChanged: {
+                    view_of_cards.answer_visible = false
+                    custom_result_indicator.set_proportion([custom_result_indicator_rec.list_of_green.length, custom_result_indicator_rec.list_of_orange.length, custom_result_indicator_rec.list_of_red.length, custom_result_indicator_rec.number_of_cards - custom_result_indicator_rec.list_of_green.length - custom_result_indicator_rec.list_of_orange.length - custom_result_indicator_rec.list_of_red.length])
+                }
+
+                Repeater{
+                    id: repeater
+                    model: CardForTest {}
+                    Loader {
+                        active: SwipeView.isCurrentItem || SwipeView.isNextItem || SwipeView.isPreviousItem
+                        Rectangle {
+                            id: text_container
+                            width: parent.width
+                            height: parent.height
+
+                            color: 'transparent'
+
+                            z: 2
+
+                            Column {
+                                spacing: 10
+                                anchors.centerIn: parent
+                                Text {
+                                    id: question
+                                    text: model.question
+                                    width: text_container.width * 0.8
+                                    wrapMode: Text.WordWrap
+                                }
+                                Text {
+                                    id: answer
+                                    text: model.answer
+                                    width: text_container.width * 0.8
+                                    wrapMode: Text.WordWrap
+                                    visible: view_of_cards.answer_visible
+                                }
                             }
                         }
                     }
                 }
-            }
 
+                ListModel {
+                    id: colorModel
+                    ListElement {green: '#008000'}
+                    ListElement {orange: '#FFA500'}
+                    ListElement {red: '#FF0000'}
+                    ListElement {grey: '#808080'}
+                }
+
+            }
         }
     }
 
@@ -219,8 +274,28 @@ Rectangle {
                 }
 
                 onClicked: {
+
+                    var index_of_red = custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex)
+                    if (index_of_red === -1) {
+                        custom_result_indicator_rec.list_of_red.push(view_of_cards.currentIndex)
+
+                        var index_of_green = custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex)
+                        if (index_of_green !== -1) {
+                            custom_result_indicator_rec.list_of_green.splice(index_of_green, 1)
+                        }
+
+                        var index_of_orange = custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex)
+                        if (index_of_orange !== -1) {
+                            custom_result_indicator_rec.list_of_orange.splice(index_of_orange, 1)
+                        }
+                    }
+
                     if (view_of_cards.count > view_of_cards.currentIndex + 1) {
                         view_of_cards.currentIndex = view_of_cards.currentIndex + 1
+                    }
+
+                    else {
+                        view_of_cards.currentIndex = 0
                     }
                 }
 
@@ -253,8 +328,27 @@ Rectangle {
                 }
 
                 onClicked: {
+
+                    var index_of_orange = custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex)
+                    if (index_of_orange === -1) {
+                        custom_result_indicator_rec.list_of_orange.push(view_of_cards.currentIndex)
+
+                        var index_of_green = custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex)
+                        if (index_of_green !== -1) {
+                            custom_result_indicator_rec.list_of_green.splice(index_of_green, 1)
+                        }
+
+                        var index_of_red = custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex)
+                        if (index_of_red !== -1) {
+                            custom_result_indicator_rec.list_of_red.splice(index_of_red, 1)
+                        }
+                    }
+
                     if (view_of_cards.count > view_of_cards.currentIndex + 1) {
                         view_of_cards.currentIndex = view_of_cards.currentIndex + 1
+                    }
+                    else {
+                        view_of_cards.currentIndex = 0
                     }
                 }
 
@@ -287,8 +381,27 @@ Rectangle {
                 }
 
                 onClicked: {
+
+                    var index_of_green = custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex)
+                    if (index_of_green === -1) {
+                        custom_result_indicator_rec.list_of_green.push(view_of_cards.currentIndex)
+
+                        var index_of_orange = custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex)
+                        if (index_of_orange !== -1) {
+                            custom_result_indicator_rec.list_of_orange.splice(index_of_orange, 1)
+                        }
+
+                        var index_of_red = custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex)
+                        if (index_of_red !== -1) {
+                            custom_result_indicator_rec.list_of_red.splice(index_of_red, 1)
+                        }
+                    }
+
                     if (view_of_cards.count > view_of_cards.currentIndex + 1) {
                         view_of_cards.currentIndex = view_of_cards.currentIndex + 1
+                    }
+                    else {
+                        view_of_cards.currentIndex = 0
                     }
                 }
 
@@ -296,6 +409,8 @@ Rectangle {
         }
 
     }
-    Component.onCompleted: repeater.model.cards_for_test(window.chosen_set_of_cards)
+    Component.onCompleted: {
+        repeater.model.cards_for_test(window.chosen_set_of_cards)
+        }
 
 }
