@@ -3,8 +3,12 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine, QmlElement, qmlRegisterType
 import sys
 import os
+
+from PySide6.QtWidgets import QApplication
+
 import loging_creating_changing_functions_for_pages
 import set_operations
+import UserActivityBarChart
 import tracking_user_activity
 from datetime import datetime
 
@@ -24,7 +28,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 if __name__ == "__main__":
-    app = QGuiApplication(sys.argv)
+    app = QApplication(sys.argv)
     engine = QQmlApplicationEngine()
 
     start_of_session = datetime.now().strftime("%Y/%m/%d %H:%M")
@@ -38,6 +42,12 @@ if __name__ == "__main__":
 
     login_password = loging_creating_changing_functions_for_pages.CheckLoginPassword()
     engine.rootContext().setContextProperty('check_login_password', login_password)
+
+    activity_bar_chart = UserActivityBarChart.ChartManager()
+    engine.rootContext().setContextProperty('chartManager', activity_bar_chart)
+
+    bar_chart = UserActivityBarChart.Chart()
+    engine.rootContext().setContextProperty('chart', bar_chart)
 
     set_op = set_operations.InsertSet()
     engine.rootContext().setContextProperty('set_op', set_op)

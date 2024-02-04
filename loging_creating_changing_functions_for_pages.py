@@ -33,9 +33,9 @@ class CheckForValidLoginPassword(QObject):
         mycursor.execute(query, (login, password,))
         result = mycursor.fetchone()
         if result is not None:
-            self.response.emit('found')
             user_basic_info.UserData.user_id = result[0]
             set_operations.LoadUserSets(user_basic_info.UserData.user_id).load_data()
+            self.response.emit('found')
         else:
             self.response.emit('not found')
 

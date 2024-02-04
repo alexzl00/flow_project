@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtCharts
 import QtQuick.Layouts
 import '../../my_components'
 
@@ -17,23 +18,43 @@ Rectangle{
         id: titleBar
     }
 
-    ColumnLayout {
+
+    Rectangle {
+        implicitWidth: parent.width * 0.7
+        implicitHeight: parent.height * 0.7
         anchors.centerIn: parent
+        color: 'transparent'
 
-        TextField {
-            id: new_login_field
-            font.bold: false
-            font.pointSize: 20
-            placeholderText: 'Set your login'
-            maximumLength: 15
+        ChartView {
+            anchors.fill: parent
+            legend.visible: false
+            antialiasing: true
+            backgroundColor: 'transparent'
+            title: "Your screen time past week"
+            titleFont.family: Arial
+            titleFont.pointSize: 24
+            titleColor: 'black'
 
-            background: Rectangle{
-                id: log_f
-                radius: 10
-                implicitWidth: window.width * 0.2
+
+            BarSeries {
+                id: mySeries
+
+                axisX: BarCategoryAxis {
+                    categories: chart.categories
+                    // gridLineColor: 'transparent'
+                    // gridVisible: false
+                }
+                axisY: ValueAxis {
+                    tickCount: 2
+                    min: 0
+                    max: 24
+                }
+                BarSet { label: "Bob"; values: chart.values; color: '#ECFFDC'}
             }
         }
+
     }
+
     // from MainDrawer.qml
     MainDrawer {
         id: drawer

@@ -29,15 +29,15 @@ class TrackUserScreenTime(QObject):
         current_time = datetime.now().strftime("%Y/%m/%d %H:%M")
 
         time_spent = datetime.strptime(current_time, "%Y/%m/%d %H:%M") - start_time
-        print(time_spent)
 
         one_minute = timedelta(minutes=1)
 
         day_of_using = start_time.strftime("%Y/%m/%d")
-        print(day_of_using, time_spent)
+        print(time_spent)
+
         if time_spent > one_minute:
-            print(day_of_using, time_spent)
             query = 'INSERT INTO user_screen_time(user_id, day_of_using, time_of_using) VALUES (%s, %s, %s)'
-            main.mycursor.execute(query, (user_basic_info.UserData.user_id, datetime.strptime(day_of_using, "%Y/%m/%d"), time_spent))
+            main.mycursor.execute(query, (user_basic_info.UserData.user_id,
+                                          datetime.strptime(day_of_using, "%Y/%m/%d"), time_spent))
             main.mydb.commit()
 

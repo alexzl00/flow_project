@@ -411,6 +411,6 @@ Rectangle {
     }
     Component.onCompleted: {
         repeater.model.cards_for_test(window.chosen_set_of_cards)
-        }
+    }
 
 }
