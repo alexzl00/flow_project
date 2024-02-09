@@ -24,7 +24,9 @@ class Chart(QObject):
     def render_data(self):
         data = main.supabase.table('user_screen_time').select(f'day_of_using, time_of_using').\
             eq('user_id', user_basic_info.UserData.user_id).execute().data
-        grouped_data = ([key, sum(time['time_of_using'] for time in list(grouped))] for key, grouped in groupby(data, key=lambda x: x['day_of_using']))
+
+        grouped_data = ([key, sum(time['time_of_using'] for time in list(grouped))]
+                        for key, grouped in groupby(data, key=lambda x: x['day_of_using']))
 
         for day in range(0, 7):
             # the previous dates

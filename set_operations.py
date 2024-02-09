@@ -83,6 +83,3 @@ class LoadUserSets:
         user_basic_info.UserData.user_sets = grouped
         print(user_basic_info.UserData.user_sets)
 
-        # # create a function that will update the order of sets by the newly updated one, when user adds new words for example
-        # print(sorted(user_basic_info.UserData.user_sets.keys(),
-        #              key=lambda k: max(d['card_id'] for d in user_basic_info.UserData.user_sets[k]), reverse=True))

@@ -152,8 +152,16 @@ Rectangle{
                             trash_button_container.color = '#ffffff'
                         }
                         onClicked: {
-                            view_of_cards.model.delete_card([learning_page.chosen_set, card_container.index])
-                            view_of_cards.model.remove(card_container.index)
+
+                            if (view_of_cards.model.delete_card([learning_page.chosen_set, card_container.index]) === true){
+                                view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
+                            }
+                            else {
+                                sets_view.model.update()
+                                view_of_cards.visible = false
+                                sets_view.visible = true
+                            }
+
                         }
                     }
 

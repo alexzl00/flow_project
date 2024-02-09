@@ -43,28 +43,37 @@ class MyModel(QAbstractListModel):
         new_data = list(user_basic_info.UserData.user_sets.keys())[::-1]
         position = self.rowCount()
 
+        self.beginRemoveRows(parent, 0, position)
+        self.endRemoveRows()
+
+        new_position = 0
         if len(new_data) > 0:
-            self.beginInsertRows(parent, position, position + len(new_data)-1)
+            self.beginInsertRows(parent, new_position, new_position + len(new_data)-1)
             for i in new_data:
-                self._data.insert(position, i)
+                self._data.insert(new_position, i)
             self.endInsertRows()
         return True
 
     @Slot(str, result=bool)
-    def wordlist_of_set(self, set_name):
+    def wordlist_of_set(self, set_name: str) -> bool:
         parent = QModelIndex()
-        new_data = user_basic_info.UserData.user_sets[set_name]
+        new_data = user_basic_info.UserData.user_sets[set_name][::-1]
         position = self.rowCount()
 
+        self.beginRemoveRows(parent, 0, position)
+        self.endRemoveRows()
+
+        new_position = 0
         if len(new_data) > 0:
-            self.beginInsertRows(parent, position, position + len(new_data)-1)
+            self.beginInsertRows(parent, new_position, new_position + len(new_data)-1)
             for i in new_data:
-                self._data.insert(position, f'question: {i["question"]}\n answer: {i["answer"]}')
+                self._data.insert(new_position, f'question: {i["question"]}\n answer: {i["answer"]}')
             self.endInsertRows()
+
         return True
 
-    @Slot(list)
-    def delete_card(self, t):
+    @Slot(list, result=bool)
+    def delete_card(self, t: list) -> bool:
         set_name: str = t[0]
         card_index: int = int(t[1])
         card_id = user_basic_info.UserData.user_sets[set_name][card_index]['card_id']
@@ -76,6 +85,13 @@ class MyModel(QAbstractListModel):
             del user_basic_info.UserData.user_sets[set_name]
             main.supabase.table('sets').delete().eq('set_name', set_name).execute()
 
+            # means that this set does not have cards anymore,
+            # so we can catch it in qml and redirect to the ListView with sets
+            return False
+
+        # means that this set has cards,
+        # and we just update the rows excluding the one deleted
+        return True
 
 
 @QmlElement
@@ -169,11 +185,6 @@ class CustomPaintedItem(QQuickPaintedItem):
         self.grey_proportion = int(list_of_colors[3])
 
         self.update()
-
-        # print(f"{self.green_proportion} and {type(self.green_proportion)} \n"
-        #       f"{self.orange_proportion} and {type(self.orange_proportion)} \n"
-        #       f"{self.red_proportion} and {type(self.red_proportion)} \n"
-        #       f"{self.grey_proportion} and {type(self.grey_proportion)} \n")
 
 
 @QmlElement
