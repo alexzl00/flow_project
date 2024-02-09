@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import '../../my_components'
 
 Rectangle {
     id: c_page
@@ -13,104 +14,9 @@ Rectangle {
 
     }
 
-    Rectangle {
+    Title_bar {
         id: titleBar
-        parent: Overlay.overlay
-        height: 35
-        color: "#1e4258"
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.rightMargin: 0
-        anchors.leftMargin: 0
-        anchors.topMargin: 0
-        MouseArea {
-            id: dragArea
-            anchors.fill: parent
-            property int mouseXPosition: 1
-            property int mouseYPosition: 1
-
-            onPressed: {
-                mouseXPosition = mouse.x
-                mouseYPosition = mouse.y
-            }
-            onPositionChanged: {
-                window.windowStatus = 0
-                window.showNormal()
-                window.x = window.x - (mouseXPosition - mouse.x)
-                window.y = window.y - (mouseYPosition - mouse.y)
-            }
-
-        }
-
-        Row {
-            id: button_row
-            anchors.right: parent.right
-            spacing: 2
-            Rectangle {
-                id: minimize_button
-                height: titleBar.height
-                width: titleBar.height + 15
-                color: 'transparent'
-                Image {
-                    id: minimize_button_image
-                    width: parent.width
-                    height: parent.height
-                    fillMode: Image.PreserveAspectFit
-                    mipmap: true
-                    source: '../../' + window.minimize_button_image_source
-
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-
-                    onEntered: {
-                        minimize_button.color = '#265077'
-                    }
-
-                    onExited: {
-                        minimize_button.color = 'transparent'
-                    }
-                    onClicked: {
-                        window.showMinimized()
-                    }
-                }
-            }
-
-            Rectangle {
-                id: close_button
-                height: titleBar.height
-                width: titleBar.height + 15
-                color: 'transparent'
-                Image {
-                    id: close_button_image
-                    width: parent.width
-                    height: parent.height
-                    fillMode: Image.PreserveAspectFit
-                    mipmap: true
-                    source: '../../' + window.close_button_image_source
-
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-
-                    onEntered: {
-                        close_button.color = '#c21807'
-                    }
-
-                    onExited: {
-                        close_button.color = 'transparent'
-                    }
-                    onClicked: {
-                        window.close()
-                    }
-                }
-            }
-
-        }
+        minimizeRestoreButtonVisible: false
     }
 
 
@@ -136,42 +42,55 @@ Rectangle {
             }
         }
 
+        Rectangle {
+            id: email_field_holder
+            height: new_email_field.height
+            width: 250
+            radius: 10
+            z: 1
 
-        TextField {
-            id: new_login_field
-            font.bold: false
-            font.pointSize: 20
-            placeholderText: 'Set your login'
-            maximumLength: 15
+            TextField {
+                id: new_email_field
+                font.bold: false
+                font.pointSize: 20
+                width: parent.width
+                placeholderText: 'Set your email'
 
-            background: Rectangle{
-                id: log_f
-                radius: 10
-                width: 250
+                background: Rectangle{
+                    radius: email_field_holder.radius
+                    width: email_field_holder.width
+
+                }
 
             }
         }
 
         Text {
-            id: login_warning
+            id: email_warning
             text: ''
             font.bold: true
             font.pixelSize: 16
         }
 
-        TextField {
-            id: new_password_field
-            font.bold: false
-            font.pointSize: 20
-            placeholderText: 'Set your password'
-            maximumLength: 15
-            echoMode: TextInput.Password
+        Rectangle {
+            id: password_field_holder
+            width: 250
+            height: new_password_field.height
+            radius: 10
 
-            background: Rectangle{
-                id: new_log_p
-                radius: 10
-                width: 250
+            TextField {
+                id: new_password_field
+                font.bold: false
+                font.pointSize: 20
+                placeholderText: 'Set your password'
+                echoMode: TextInput.Password
+                width: parent.width
 
+                background: Rectangle{
+                    radius: password_field_holder.radius
+                    width: password_field_holder.width
+
+                }
             }
         }
 
@@ -248,14 +167,11 @@ Rectangle {
                 submit_button.color = '#ffffff'
             }
             onClicked: {
-                check_login_password.check_login(new_login_field.text)
-                check_login_password.check_password(new_password_field.text)
-                if (login_warning.text === '' && password_warning.text === ''){
-                    check_for_valid_login_password.check_if_login_not_taken(new_login_field.text)
-                    if (login_warning.text === '' && password_warning.text === ''){
-                        create_account.create_new_account([new_login_field.text, new_password_field.text])
-                        stack.replace(log_page)
-                    }
+                check_email_password.check_email_forbidden(new_email_field.text)
+                check_email_password.check_password_forbidden(new_password_field.text)
+                if (email_warning.text === '' && password_warning.text === ''){
+                    create_account.create_new_account([new_email_field.text, new_password_field.text])
+                    stack.replace(log_page)
                 }
             }
         }
@@ -268,45 +184,31 @@ Rectangle {
             button_text.text = stringText
         }
     }
+
     Connections {
-        target: check_login_password
+        target: check_email_password
 
         function onCheck_data(stringText){
-            if (stringText == 'false_login') {
-                login_warning.text = "Allowed special characters: (-, _)"
+            if (stringText == 'false_email') {
+                email_warning.text = "Allowed special characters: (-, _)"
             }
             if (stringText == 'false_password') {
                 password_warning.text = "Allowed special characters: (-, _)"
             }
-            if (stringText == "no_login_issue") {
-                login_warning.text = ''
+            if (stringText == "no_email_issue") {
+                email_warning.text = ''
             }
             if (stringText == "no_password_issue") {
                 password_warning.text = ''
             }
-            if (stringText == 'Login field is required'){
-                login_warning.text = stringText
+            if (stringText == 'Email field is required'){
+                email_warning.text = stringText
             }
             if (stringText == 'Password field is required'){
                 password_warning.text = stringText
             }
-            if (stringText == 'Login field is required'){
-                login_warning.text = stringText
-            }
         }
-    }
-    Connections {
-        target: check_for_valid_login_password
 
-        function onResponse(stringText){
-            if (stringText == 'login is taken'){
-                login_warning.text = 'Login is already taken'
-            }
-            if (stringText == 'login not taken') {
-                login_warning.text = ''
-            }
-
-        }
     }
 
     }

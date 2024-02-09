@@ -1,6 +1,7 @@
 from PySide6.QtCore import Slot, QObject
 from datetime import datetime, timedelta
 import main
+import uuid
 from PySide6.QtQml import QmlElement
 from dataclasses import dataclass
 
@@ -33,11 +34,11 @@ class TrackUserScreenTime(QObject):
         one_minute = timedelta(minutes=1)
 
         day_of_using = start_time.strftime("%Y/%m/%d")
-        print(time_spent)
 
         if time_spent > one_minute:
-            query = 'INSERT INTO user_screen_time(user_id, day_of_using, time_of_using) VALUES (%s, %s, %s)'
-            main.mycursor.execute(query, (user_basic_info.UserData.user_id,
-                                          datetime.strptime(day_of_using, "%Y/%m/%d"), time_spent))
-            main.mydb.commit()
+            data, count = main.supabase.table('user_screen_time') \
+                .insert({'user_id': user_basic_info.UserData.user_id,
+                         'day_of_using': datetime.strptime(day_of_using, "%Y/%m/%d").isoformat(),
+                         'time_of_using': int(time_spent.total_seconds())}).execute()
 
+        main.supabase.auth.sign_out()

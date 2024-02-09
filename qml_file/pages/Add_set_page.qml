@@ -13,6 +13,10 @@ Rectangle{
         GradientStop{position: 0.7; color: '#379683'}
     }
 
+    MainDrawer{
+        id: drawer
+    }
+
     Title_bar{
         id: titleBar
     }
@@ -127,7 +131,7 @@ Rectangle{
                 Text {
                     id: button_text
                     anchors.centerIn: submit_add_card_button
-                    text: 'Submit'
+                    text: 'Add card'
                     font.pixelSize: 16
                 }
                 MouseArea {
@@ -142,6 +146,8 @@ Rectangle{
                     }
                     onClicked: {
                         set_op.insert_set_cards([add_set_name.text, question.text, answer.text])
+                        answer.text = ''
+                        question.text = ''
                     }
                 }
             }
@@ -204,7 +210,5 @@ Rectangle{
 
         }
     }
-    MainDrawer{
-        id: drawer
-    }
+
 }

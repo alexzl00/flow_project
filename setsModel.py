@@ -6,6 +6,7 @@ from PySide6.QtGui import QColor, QPainter
 from PySide6.QtQml import QmlElement
 from PySide6.QtQuick import QQuickPaintedItem
 
+import main
 import user_basic_info
 
 import pyttsx3
@@ -39,7 +40,7 @@ class MyModel(QAbstractListModel):
 
     @Slot(result=bool)
     def update(self, parent=QModelIndex()):
-        new_data = user_basic_info.UserData.user_sets.keys()
+        new_data = list(user_basic_info.UserData.user_sets.keys())[::-1]
         position = self.rowCount()
 
         if len(new_data) > 0:
@@ -58,9 +59,23 @@ class MyModel(QAbstractListModel):
         if len(new_data) > 0:
             self.beginInsertRows(parent, position, position + len(new_data)-1)
             for i in new_data:
-                self._data.insert(position, f'question: {i[1]}\n answer: {i[2]}')
+                self._data.insert(position, f'question: {i["question"]}\n answer: {i["answer"]}')
             self.endInsertRows()
         return True
+
+    @Slot(list)
+    def delete_card(self, t):
+        set_name: str = t[0]
+        card_index: int = int(t[1])
+        card_id = user_basic_info.UserData.user_sets[set_name][card_index]['card_id']
+        del user_basic_info.UserData.user_sets[set_name][card_index]
+
+        main.supabase.table('word_sets').delete().eq('card_id', card_id).execute()
+
+        if len(user_basic_info.UserData.user_sets[set_name]) == 0:
+            del user_basic_info.UserData.user_sets[set_name]
+            main.supabase.table('sets').delete().eq('set_name', set_name).execute()
+
 
 
 @QmlElement
@@ -96,7 +111,7 @@ class CardForTest(QAbstractListModel):
         if len(new_data) > 0:
             self.beginInsertRows(parent, position, position + len(new_data)-1)
             for i in new_data:
-                self._data.insert(position, (f'question: {i[1]}', f'answer: {i[2]}'))
+                self._data.insert(position, (f'question: {i["question"]}', f'answer: {i["answer"]}'))
             self.endInsertRows()
         return True
 

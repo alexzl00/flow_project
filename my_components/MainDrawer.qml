@@ -11,6 +11,7 @@ Rectangle {
 
     // properties
     property bool is_drawn: false
+
     // button sources
     property string menu_button: '../images/menu_button.png'
     property string home_button: '../images/home_button.png'

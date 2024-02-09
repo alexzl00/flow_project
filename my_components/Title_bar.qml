@@ -16,6 +16,11 @@ Rectangle {
     anchors.leftMargin: 0
     anchors.topMargin: 0
 
+    // we need this for log page and create account page,
+    // because we dont need maximize_restore_button to be shown on these pages
+
+    property bool minimizeRestoreButtonVisible: true
+
     MouseArea {
         id: dragArea
         anchors.fill: parent
@@ -79,6 +84,10 @@ Rectangle {
             height: titleBar.height
             width: titleBar.height + 15
             color: 'transparent'
+
+
+            visible: minimizeRestoreButtonVisible
+
             Image {
                 id: maximize_restore_button_image
                 width: parent.width

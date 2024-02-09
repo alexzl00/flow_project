@@ -11,7 +11,10 @@ Rectangle{
     implicitHeight: parent
 
     property string test_button_png: "../../images/test_button.png"
+    property string trash_button_png: '../../images/trash_button.png'
     property int choose_test_rec_preferable_height: learning_page.height * 0.2
+
+    property string chosen_set: ''
 
     gradient: Gradient{
         GradientStop{position: 0.0; color: '#5cdb95'}
@@ -74,6 +77,7 @@ Rectangle{
 
                         // loading the ListView (view_of_cards) set based on chosen set
                         view_of_cards.model.wordlist_of_set(list_view_item_text.text)
+                        learning_page.chosen_set = list_view_item_text.text
                     }
                 }
             }
@@ -90,10 +94,15 @@ Rectangle{
         implicitHeight: learning_page.height * 0.5
         spacing: 10
 
+
         delegate: Item{
             implicitWidth: parent.width
+            id: card_container
+            property int index: DelegateModel.itemsIndex
+
             // it doesnt work parent.height, so learning_page.height (main rectangle's height) should be passed
             implicitHeight: Math.max(learning_page.height * 0.1, cards_view_item_text.contentHeight)
+
             Rectangle{
                 id: cards_view_item
                 radius: 20
@@ -109,17 +118,45 @@ Rectangle{
                     wrapMode: Text.WordWrap
                 }
 
-                MouseArea {
-                    id: cards_view_item_area
-                    anchors.fill: parent
-                    hoverEnabled: true
+                Rectangle {
+                    id: trash_button_container
+                    implicitWidth: parent.height * 0.45
+                    implicitHeight: parent.height * 0.45
+                    radius: parent.height / 2
+                    color: 'transparent'
+                    anchors.rightMargin: 10
 
-                    onEntered: {
-                        cards_view_item.color = '#C0C0C0'
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Image {
+                        id: trash_button
+                        anchors.centerIn: parent
+
+                        width: parent.width * 0.8
+                        height: parent.height * 0.8
+                        fillMode: Image.PreserveAspectFit
+                        mipmap: true
+                        source: trash_button_png
+
                     }
-                    onExited: {
-                        cards_view_item.color = '#ffffff'
+                    MouseArea {
+                        id: delete_area
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onEntered: {
+                            trash_button_container.color = '#C0C0C0'
+                        }
+                        onExited: {
+                            trash_button_container.color = '#ffffff'
+                        }
+                        onClicked: {
+                            view_of_cards.model.delete_card([learning_page.chosen_set, card_container.index])
+                            view_of_cards.model.remove(card_container.index)
+                        }
                     }
+
                 }
             }
         }
