@@ -1,16 +1,18 @@
 import mysql.connector
-from PySide6.QtGui import QGuiApplication
-from PySide6.QtQml import QQmlApplicationEngine, QmlElement, qmlRegisterType
+from PySide6.QtCore import QObject, Signal
+from PySide6.QtQml import QQmlApplicationEngine
 import sys
 import os
 
 from PySide6.QtWidgets import QApplication
-from postgrest import APIError
+from gotrue import SignInWithPasswordlessCredentials
+from supafunc.errors import FunctionsRelayError, FunctionsHttpError
 
 import loging_creating_changing_functions_for_pages
 import set_operations
 import UserActivityBarChart
 import tracking_user_activity
+import reset_user_password
 from datetime import datetime
 
 
@@ -38,8 +40,19 @@ key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 
-if __name__ == "__main__":
+class SignalHandler(QObject):
+    aboutToQuit = Signal()
 
+
+def handle_quit():
+    supabase.auth.sign_out()
+    try:
+        tracking_user_activity.TrackUserScreenTime.end_session()
+    except AttributeError:
+        pass
+
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     engine = QQmlApplicationEngine()
 
@@ -55,11 +68,19 @@ if __name__ == "__main__":
     login_password = loging_creating_changing_functions_for_pages.CheckEmailPassword()
     engine.rootContext().setContextProperty('check_email_password', login_password)
 
+    reset_password = reset_user_password.ResetPassword()
+    engine.rootContext().setContextProperty('reset_user_password', reset_password)
+
     bar_chart = UserActivityBarChart.Chart()
     engine.rootContext().setContextProperty('chart', bar_chart)
 
     set_op = set_operations.InsertSet()
     engine.rootContext().setContextProperty('set_op', set_op)
+
+    # handling window quiting
+    signal_handler = SignalHandler()
+    signal_handler.aboutToQuit.connect(handle_quit)
+    app.aboutToQuit.connect(signal_handler.aboutToQuit)
 
     engine.load(os.path.join(os.path.dirname(__file__), "qml_file/Flow_app.qml"))
     if not engine.rootObjects():

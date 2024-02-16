@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import TrackUserScreenTime 1.0
+
 
 
 Rectangle {
@@ -32,7 +32,9 @@ Rectangle {
             mouseYPosition = mouse.y
         }
         onPositionChanged: {
+
             window.showNormal()
+
             if (window.windowStatus === 1) {
                 window.maximize_restore_button_image_source = "images/maximize_button.png"}
             window.windowStatus = 0
@@ -75,6 +77,8 @@ Rectangle {
                     minimize_button.color = 'transparent'
                 }
                 onClicked: {
+                    window.maximize_restore_button_image_source = "images/maximize_button.png"
+                    window.windowStatus = 0
                     window.showMinimized()
                 }
             }
@@ -140,14 +144,9 @@ Rectangle {
                     close_button.color = 'transparent'
                 }
                 onClicked: {
-                    track_user_screen_session.end_session()
                     window.close()
                 }
             }
-        }
-
-        TrackUserScreenTime {
-            id: track_user_screen_session
         }
 
     }

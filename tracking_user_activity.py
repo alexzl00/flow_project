@@ -1,8 +1,5 @@
-from PySide6.QtCore import Slot, QObject
 from datetime import datetime, timedelta
 import main
-import uuid
-from PySide6.QtQml import QmlElement
 from dataclasses import dataclass
 
 import user_basic_info
@@ -13,19 +10,13 @@ class StartOfSession:
     start_of_session = str
 
 
-QML_IMPORT_NAME = 'TrackUserScreenTime'
-QML_IMPORT_MAJOR_VERSION = 1
-QML_IMPORT_MINOR_VERSION = 0
-
-
-@QmlElement
-class TrackUserScreenTime(QObject):
+class TrackUserScreenTime:
     def __init__(self):
         super().__init__()
 
     # saves the durance of the user session to database
-    @Slot()
-    def end_session(self):
+    @staticmethod
+    def end_session():
         start_time = datetime.strptime(str(StartOfSession.start_of_session), "%Y/%m/%d %H:%M")
         current_time = datetime.now().strftime("%Y/%m/%d %H:%M")
 

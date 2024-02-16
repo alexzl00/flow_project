@@ -38,6 +38,7 @@ class MyModel(QAbstractListModel):
             data = self._data[index.row()]
             return data
 
+    # for sets_view
     @Slot(result=bool)
     def update(self, parent=QModelIndex()):
         new_data = list(user_basic_info.UserData.user_sets.keys())[::-1]
@@ -54,6 +55,7 @@ class MyModel(QAbstractListModel):
             self.endInsertRows()
         return True
 
+    # for view_of_cards
     @Slot(str, result=bool)
     def wordlist_of_set(self, set_name: str) -> bool:
         parent = QModelIndex()
@@ -92,6 +94,36 @@ class MyModel(QAbstractListModel):
         # means that this set has cards,
         # and we just update the rows excluding the one deleted
         return True
+
+    @Slot(list, result=bool)
+    def alter_card(self, t: list) -> bool:
+        set_name: str = t[0]
+        card_index: int = int(t[1])
+        new_question = t[2]
+        new_answer = t[3]
+        print(f's {set_name}, c{card_index}, nq {new_question}, na {new_answer}')
+
+        card_id = user_basic_info.UserData.user_sets[set_name][card_index]['card_id']
+
+        user_basic_info.UserData.user_sets[set_name][card_index]['question'] = new_question
+        user_basic_info.UserData.user_sets[set_name][card_index]['answer'] = new_answer
+
+        main.supabase.table('word_sets').update({'question': new_question, 'answer': new_answer}).eq('card_id', card_id).execute()
+        return True
+
+    @Slot(list, result=str)
+    def answer(self, t: list):
+        set_name: str = t[0]
+        card_index: int = int(t[1])
+
+        return user_basic_info.UserData.user_sets[set_name][card_index]['answer']
+
+    @Slot(list, result=str)
+    def question(self, t: list):
+        set_name: str = t[0]
+        card_index: int = int(t[1])
+
+        return user_basic_info.UserData.user_sets[set_name][card_index]['question']
 
 
 @QmlElement

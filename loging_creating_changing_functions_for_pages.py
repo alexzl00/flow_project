@@ -3,6 +3,9 @@ import mysql.connector
 import user_basic_info
 from PySide6.QtCore import QObject, Slot, Signal
 import main
+import threading
+from postgrest import APIError
+
 QML_IMPORT_NAME = 'io.qt.textproperties'
 QML_IMPORT_MAJOR_VERSION = 1
 
@@ -33,7 +36,7 @@ class CheckForValidEmailPassword(QObject):
 
         try:
             session = main.supabase.auth.sign_in_with_password({"email": f"{login}", "password": f"{password}"})
-        except main.APIError:
+        except APIError:
             self.response.emit('not found')
 
         user_basic_info.UserData.user_id = session.user.id
@@ -48,15 +51,19 @@ class CreateAccount(QObject):
 
     createNewAccount = Signal(str)
 
+    @staticmethod
+    def create_account(email, password):
+        main.supabase.auth.sign_up({'email': email, 'password': password, 'send_magic_link': True})
+
     @Slot(str)
     def create_new_account(self, t):
         t = t.split(',')
         email = t[0]
         password = t[1]
-        # query = 'INSERT INTO user(user_login, user_password) VALUES (%s, %s)'
-        # mycursor.execute(query, (login, password))
-        # mydb.commit()
-        main.supabase.auth.sign_up({'email': email, 'password': password, 'send_magic_link': True})
+
+        t1 = threading.Thread(target=self.create_account, args=[email, password])
+        t1.start()
+
         self.createNewAccount.emit('tru')
 
 

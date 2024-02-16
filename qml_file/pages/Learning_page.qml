@@ -12,6 +12,7 @@ Rectangle{
 
     property string test_button_png: "../../images/test_button.png"
     property string trash_button_png: '../../images/trash_button.png'
+    property string alter_card_button_png: '../../images/alter_card_button.png'
     property int choose_test_rec_preferable_height: learning_page.height * 0.2
 
     property string chosen_set: ''
@@ -85,7 +86,7 @@ Rectangle{
         }
     }
 
-    ListView{
+    ListView {
         id: view_of_cards
         visible: false
         model: MyModel {}
@@ -117,55 +118,222 @@ Rectangle{
                     anchors.centerIn: parent
                     wrapMode: Text.WordWrap
                 }
-
-                Rectangle {
-                    id: trash_button_container
-                    implicitWidth: parent.height * 0.45
-                    implicitHeight: parent.height * 0.45
-                    radius: parent.height / 2
-                    color: 'transparent'
-                    anchors.rightMargin: 10
-
+                Row {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
 
-                    Image {
-                        id: trash_button
-                        anchors.centerIn: parent
+                    Rectangle {
+                        id: alter_card_button_container
+                        implicitWidth: cards_view_item.height * 0.45
+                        implicitHeight: cards_view_item.height * 0.45
+                        radius: cards_view_item.height / 2
+                        color: 'transparent'
 
-                        width: parent.width * 0.8
-                        height: parent.height * 0.8
-                        fillMode: Image.PreserveAspectFit
-                        mipmap: true
-                        source: trash_button_png
+                        anchors.rightMargin: 10
+
+                        Image {
+                            id: alter_card_button
+                            anchors.centerIn: parent
+
+                            width: parent.width * 0.7
+                            height: parent.height * 0.7
+                            fillMode: Image.PreserveAspectFit
+                            mipmap: true
+                            source: alter_card_button_png
+
+                        }
+                        MouseArea {
+                            id: alter_area
+                            anchors.fill: parent
+                            hoverEnabled: true
+
+                            onEntered: {
+                                alter_card_button_container.color = '#C0C0C0'
+                            }
+                            onExited: {
+                                alter_card_button_container.color = '#ffffff'
+                            }
+                            onClicked: {
+                                alter_card.visible = true
+                                alter_card.chosen_card_index = card_container.index
+                                alter_card.question_of_chosen_card = view_of_cards.model.question([learning_page.chosen_set, card_container.index])
+                                alter_card.answer_of_chosen_card = view_of_cards.model.answer([learning_page.chosen_set, card_container.index])
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        id: trash_button_container
+                        implicitWidth: cards_view_item.height * 0.45
+                        implicitHeight: cards_view_item.height * 0.45
+                        radius: cards_view_item.height / 2
+                        color: 'transparent'
+
+                        anchors.rightMargin: 10
+
+                        Image {
+                            id: trash_button
+                            anchors.centerIn: parent
+
+                            width: parent.width * 0.8
+                            height: parent.height * 0.8
+                            fillMode: Image.PreserveAspectFit
+                            mipmap: true
+                            source: trash_button_png
+
+                        }
+                        MouseArea {
+                            id: delete_area
+                            anchors.fill: parent
+                            hoverEnabled: true
+
+                            onEntered: {
+                                trash_button_container.color = '#C0C0C0'
+                            }
+                            onExited: {
+                                trash_button_container.color = '#ffffff'
+                            }
+                            onClicked: {
+
+                                if (view_of_cards.model.delete_card([learning_page.chosen_set, card_container.index]) === true){
+                                    view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
+                                }
+                                else {
+                                    sets_view.model.update()
+                                    view_of_cards.visible = false
+                                    sets_view.visible = true
+                                }
+
+                            }
+                        }
 
                     }
-                    MouseArea {
-                        id: delete_area
-                        anchors.fill: parent
-                        hoverEnabled: true
-
-                        onEntered: {
-                            trash_button_container.color = '#C0C0C0'
-                        }
-                        onExited: {
-                            trash_button_container.color = '#ffffff'
-                        }
-                        onClicked: {
-
-                            if (view_of_cards.model.delete_card([learning_page.chosen_set, card_container.index]) === true){
-                                view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
-                            }
-                            else {
-                                sets_view.model.update()
-                                view_of_cards.visible = false
-                                sets_view.visible = true
-                            }
-
-                        }
-                    }
-
                 }
+            }
+        }
+    }
+
+    Rectangle {
+        id: alter_card
+        implicitWidth: parent.width * 0.5
+        implicitHeight: parent.height * 0.6
+        anchors.centerIn: parent
+        color: 'red'
+
+        visible: false
+
+        z: 1
+
+        // indicates which card should be changed
+        property int chosen_card_index: -1
+
+        property string question_of_chosen_card: ''
+        property string answer_of_chosen_card: ''
+
+        ColumnLayout {
+            anchors.centerIn: parent
+            spacing: 10
+
+            Rectangle {
+                id: container
+                implicitWidth: alter_card.width * 0.8
+                implicitHeight: alter_card.height * 0.4
+                radius: 10
+                TextEdit {
+                    id: question
+
+                    text: alter_card.question_of_chosen_card
+
+
+                    anchors.fill: parent
+                    padding: 3
+                    font.pixelSize: 14
+                    focus: true
+                    wrapMode: TextEdit.Wrap
+                    onTextChanged: {
+                        var pos = question.positionAt(1, container.height + 1);
+                        if(question.length >= pos)
+                        {
+                            question.remove(pos, question.length);
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                id: container2
+                implicitWidth: alter_card.width * 0.8
+                implicitHeight: alter_card.height * 0.4
+                radius: 10
+                TextEdit {
+                    id: answer
+
+                    text: alter_card.answer_of_chosen_card
+
+                    anchors.fill: parent
+                    padding: 3
+                    font.pixelSize: 14
+                    focus: true
+                    wrapMode: TextEdit.Wrap
+                    onTextChanged: {
+                        var pos = answer.positionAt(1, container2.height + 1);
+                        if(answer.length >= pos)
+                        {
+                            answer.remove(pos, answer.length);
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                id: submit_alter_card_button
+                Layout.alignment: Qt.AlignBottom && Qt.AlignHCenter
+                implicitHeight: parent.height * 0.10
+                implicitWidth: parent.width * 0.30
+                color: '#ffffff'
+                radius: 5
+                Text {
+                    id: button_text
+                    anchors.centerIn: submit_alter_card_button
+                    text: 'Accept altering'
+                    font.pixelSize: 16
+                }
+                MouseArea {
+                    anchors.fill:  submit_alter_card_button
+                    hoverEnabled: true
+
+                    onEntered: {
+                        submit_alter_card_button.color = '#C0C0C0'
+                    }
+                    onExited: {
+                        submit_alter_card_button.color = '#ffffff'
+                    }
+                    onClicked: {
+                        if (view_of_cards.model.alter_card([learning_page.chosen_set, alter_card.chosen_card_index, question.text, answer.text]) === true) {
+                            view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
+                            alter_card.visible = false
+                        }
+                        answer.text = ''
+                        question.text = ''
+                    }
+                }
+            }
+        }
+    }
+
+    MouseArea {
+        id: outside_alter_card_rec
+        anchors.fill: learning_page
+
+        // is enabled when the alter_card rectangle is visible
+        enabled: alter_card.visible
+
+        onClicked: {
+            var rect = alter_card.mapToItem(parent, 0, 0)
+            var rectWidth = alter_card.width
+            var rectHeight = alter_card.height
+
+            if (mouse.x < rect.x || mouse.x > rect.x + rectWidth || mouse.y < rect.y || mouse.y > rect.y + rectHeight){
+                alter_card.visible = false
             }
         }
     }
@@ -208,6 +376,7 @@ Rectangle{
             }
         }
     }
+
     PropertyAnimation{
         id: choose_test_rec_animation
         target: choose_test_rec

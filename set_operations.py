@@ -4,10 +4,6 @@ import main
 import user_basic_info
 from itertools import groupby
 
-import PySide6
-
-QML_IMPORT_NAME = 'qml_set_operations'
-QML_IMPORT_MAJOR_VERSION = 1
 
 
 mydb = mysql.connector.connect(
@@ -33,8 +29,7 @@ class InsertSet(QObject):
         data, count = main.supabase.table('word_sets').insert(
             {'user_id': user_id, 'set_id': set_id, 'question': question,
              'answer': answer}).execute()
-        card_id = data[1][0]['card_id']
-        return card_id
+        return data, count
 
     @Slot(str)
     def insert_set_cards(self, set_card):
@@ -46,7 +41,8 @@ class InsertSet(QObject):
         try:
             set_id = user_basic_info.UserData.user_sets[set_name][0]['set_id']
 
-            card_id = self.insert_word_into_set(set_id, user_basic_info.UserData.user_id, question, answer)
+            data, count = self.insert_word_into_set(set_id, user_basic_info.UserData.user_id, question, answer)
+            card_id = data[1][0]['card_id']
 
             user_basic_info.UserData.user_sets[set_name]\
                 .append({'set_id': set_id, 'question': question, 'answer': answer, 'card_id': card_id})
@@ -56,7 +52,8 @@ class InsertSet(QObject):
                 {'user_id': user_basic_info.UserData.user_id, 'set_name': set_name}).execute()
             set_id = data[1][0]['set_id']
 
-            card_id = self.insert_word_into_set(set_id, user_basic_info.UserData.user_id, question, answer)
+            data, count = self.insert_word_into_set(set_id, user_basic_info.UserData.user_id, question, answer)
+            card_id = data[1][0]['card_id']
 
             user_basic_info.UserData.user_sets = \
                 {set_name: [{'set_id': set_id, 'question': question, 'answer': answer, 'card_id': card_id}],

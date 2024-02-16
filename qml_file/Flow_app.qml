@@ -131,5 +131,9 @@ ApplicationWindow{
             id: add_set_page
             Add_set_page {id: add_set_page}
         }
+        Component {
+            id: reset_password_page
+            Reset_password_page{id: reset_password_page}
+        }
     }
 }

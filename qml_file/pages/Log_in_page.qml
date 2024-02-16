@@ -177,7 +177,7 @@ Rectangle {
                 }
 
                 onClicked: {
-                    forgot_password.text = 'pussy'
+                    stack.replace(reset_password_page)
                 }
 
             }
