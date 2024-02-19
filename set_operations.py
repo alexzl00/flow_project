@@ -44,9 +44,12 @@ class InsertSet(QObject):
             data, count = self.insert_word_into_set(set_id, user_basic_info.UserData.user_id, question, answer)
             card_id = data[1][0]['card_id']
 
-            user_basic_info.UserData.user_sets[set_name]\
-                .append({'set_id': set_id, 'question': question, 'answer': answer, 'card_id': card_id})
+            # user_basic_info.UserData.user_sets[set_name]\
+            #     .append({'set_id': set_id, 'question': question, 'answer': answer, 'card_id': card_id})
 
+            user_basic_info.UserData.user_sets[set_name]\
+                .insert(0, {'set_id': set_id, 'question': question, 'answer': answer, 'card_id': card_id})
+            print(user_basic_info.UserData.user_sets[set_name])
         except KeyError:
             data, count = main.supabase.table('sets').insert(
                 {'user_id': user_basic_info.UserData.user_id, 'set_name': set_name}).execute()
@@ -75,7 +78,7 @@ class LoadUserSets:
         sorted_result = sorted(result, key=lambda x: (x['set_id']), reverse=True)
 
         # grouping the result by the set name
-        grouped = dict(((key, list({k: v for k, v in i.items() if not isinstance(v, dict)} for i in group))
+        grouped = dict(((key, list({k: v for k, v in i.items() if not isinstance(v, dict)} for i in group)[::-1])
                         for key, group in groupby(sorted_result, key=lambda x: x['sets']['set_name'])))
         user_basic_info.UserData.user_sets = grouped
         print(user_basic_info.UserData.user_sets)

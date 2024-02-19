@@ -151,13 +151,13 @@ Rectangle{
                                 alter_card_button_container.color = '#C0C0C0'
                             }
                             onExited: {
-                                alter_card_button_container.color = '#ffffff'
+                                alter_card_button_container.color = 'transparent'
                             }
                             onClicked: {
                                 alter_card.visible = true
                                 alter_card.chosen_card_index = card_container.index
-                                alter_card.question_of_chosen_card = view_of_cards.model.question([learning_page.chosen_set, card_container.index])
-                                alter_card.answer_of_chosen_card = view_of_cards.model.answer([learning_page.chosen_set, card_container.index])
+                                container.setTextToQuestion(view_of_cards.model.question([learning_page.chosen_set, card_container.index]))
+                                container2.setTextToAnswer(view_of_cards.model.answer([learning_page.chosen_set, card_container.index]))
                             }
                         }
                     }
@@ -191,7 +191,7 @@ Rectangle{
                                 trash_button_container.color = '#C0C0C0'
                             }
                             onExited: {
-                                trash_button_container.color = '#ffffff'
+                                trash_button_container.color = 'transparent'
                             }
                             onClicked: {
 
@@ -227,61 +227,16 @@ Rectangle{
         // indicates which card should be changed
         property int chosen_card_index: -1
 
-        property string question_of_chosen_card: ''
-        property string answer_of_chosen_card: ''
-
         ColumnLayout {
             anchors.centerIn: parent
             spacing: 10
 
-            Rectangle {
+            Add_question {
                 id: container
-                implicitWidth: alter_card.width * 0.8
-                implicitHeight: alter_card.height * 0.4
-                radius: 10
-                TextEdit {
-                    id: question
-
-                    text: alter_card.question_of_chosen_card
-
-
-                    anchors.fill: parent
-                    padding: 3
-                    font.pixelSize: 14
-                    focus: true
-                    wrapMode: TextEdit.Wrap
-                    onTextChanged: {
-                        var pos = question.positionAt(1, container.height + 1);
-                        if(question.length >= pos)
-                        {
-                            question.remove(pos, question.length);
-                        }
-                    }
-                }
             }
-            Rectangle {
+
+            Add_answer {
                 id: container2
-                implicitWidth: alter_card.width * 0.8
-                implicitHeight: alter_card.height * 0.4
-                radius: 10
-                TextEdit {
-                    id: answer
-
-                    text: alter_card.answer_of_chosen_card
-
-                    anchors.fill: parent
-                    padding: 3
-                    font.pixelSize: 14
-                    focus: true
-                    wrapMode: TextEdit.Wrap
-                    onTextChanged: {
-                        var pos = answer.positionAt(1, container2.height + 1);
-                        if(answer.length >= pos)
-                        {
-                            answer.remove(pos, answer.length);
-                        }
-                    }
-                }
             }
 
             Rectangle {
@@ -308,12 +263,12 @@ Rectangle{
                         submit_alter_card_button.color = '#ffffff'
                     }
                     onClicked: {
-                        if (view_of_cards.model.alter_card([learning_page.chosen_set, alter_card.chosen_card_index, question.text, answer.text]) === true) {
+                        if (view_of_cards.model.alter_card([learning_page.chosen_set, alter_card.chosen_card_index, container.getQuestionText(), container2.getAnswerText()]) === true) {
                             view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
                             alter_card.visible = false
                         }
-                        answer.text = ''
-                        question.text = ''
+                        container.clearQuestionText()
+                        container2.clearAnswerText()
                     }
                 }
             }

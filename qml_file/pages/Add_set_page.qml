@@ -58,68 +58,15 @@ Rectangle{
                     }
                 }
 
-                Rectangle {
+
+                Add_question {
                     id: container
-                    implicitWidth: window.width * 0.30
-                    implicitHeight: window.height * 0.17
-                    radius: 10
-                    TextEdit {
-                        id: question
-                        property string placeholderText: "  Add a question"
-
-                        Text {
-                            text: question.placeholderText
-                            color: 'gray'
-                            font.pixelSize: 14
-                            font.bold: true
-                            visible: !question.text
-                        }
-
-                        anchors.fill: parent
-                        padding: 3
-                        font.pixelSize: 14
-                        focus: true
-                        wrapMode: TextEdit.Wrap
-                        onTextChanged: {
-                            var pos = question.positionAt(1, container.height + 1);
-                            if(question.length >= pos)
-                            {
-                                question.remove(pos, question.length);
-                            }
-                        }
-                    }
                 }
-                Rectangle {
+
+                Add_answer {
                     id: container2
-                    implicitWidth: window.width * 0.30
-                    implicitHeight: window.height * 0.17
-                    radius: 10
-                    TextEdit {
-                        id: answer
-                        property string placeholderText: "  Add an answer"
-
-                        Text {
-                            text: answer.placeholderText
-                            color: 'gray'
-                            font.pixelSize: 14
-                            font.bold: true
-                            visible: !answer.text
-                        }
-
-                        anchors.fill: parent
-                        padding: 3
-                        font.pixelSize: 14
-                        focus: true
-                        wrapMode: TextEdit.Wrap
-                        onTextChanged: {
-                            var pos = answer.positionAt(1, container2.height + 1);
-                            if(answer.length >= pos)
-                            {
-                                answer.remove(pos, answer.length);
-                            }
-                        }
-                    }
                 }
+
             }
             Rectangle {
                 id: submit_add_card_button
@@ -145,9 +92,12 @@ Rectangle{
                         submit_add_card_button.color = '#ffffff'
                     }
                     onClicked: {
-                        set_op.insert_set_cards([add_set_name.text, question.text, answer.text])
-                        answer.text = ''
-                        question.text = ''
+                        var question = container.getQuestionText()
+                        var answer = container2.getAnswerText()
+
+                        set_op.insert_set_cards([add_set_name.text, question, answer])
+                        container.clearQuestionText()
+                        container2.clearAnswerText()
                     }
                 }
             }
