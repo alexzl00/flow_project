@@ -1,8 +1,8 @@
 import dataclasses
 import threading
 
-from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot, QObject, Signal
-from PySide6.QtGui import QColor, QPainter
+from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot, QObject, Signal, QRectF, QSize
+from PySide6.QtGui import QColor, QPainter, QImage, QBrush
 from PySide6.QtQml import QmlElement
 from PySide6.QtQuick import QQuickPaintedItem
 
@@ -159,7 +159,7 @@ class CardForTest(QAbstractListModel):
         if len(new_data) > 0:
             self.beginInsertRows(parent, position, position + len(new_data)-1)
             for i in new_data:
-                self._data.insert(position, (f'question: {i["question"]}', f'answer: {i["answer"]}'))
+                self._data.insert(position, (f'{i["question"]}', f'{i["answer"]}'))
             self.endInsertRows()
         return True
 
@@ -180,43 +180,6 @@ class CardForTest(QAbstractListModel):
 
         t1 = threading.Thread(target=self.text_to_speech_separate_thread, args=[text])
         t1.start()
-
-
-@QmlElement
-class CustomPaintedItem(QQuickPaintedItem):
-    def __init__(self):
-        super().__init__()
-
-        self.grey_proportion = 1
-        self.red_proportion = 0
-        self.orange_proportion = 0
-        self.green_proportion = 0
-
-    def paint(self, painter):
-        total_width = self.width()
-        total_height = self.height()
-
-        total_proportion = self.grey_proportion + self.red_proportion + self.orange_proportion + self.green_proportion
-        green_width = total_width * self.green_proportion / total_proportion
-        orange_width = total_width * self.orange_proportion / total_proportion
-        red_width = total_width * self.red_proportion / total_proportion
-        grey_width = total_width * self.grey_proportion / total_proportion
-
-        painter.fillRect(0, 0, green_width, total_height, QColor(Qt.green))
-        painter.fillRect(green_width, 0, orange_width, total_height, '#FFA500')
-        painter.fillRect(green_width + orange_width, 0, red_width, total_height, QColor(Qt.red))
-        painter.fillRect(green_width + orange_width + red_width, 0, grey_width, total_height, '#808080')
-
-    @Slot(str)
-    def set_proportion(self, list_of_colors):
-
-        list_of_colors = list_of_colors.split(',')
-        self.green_proportion = int(list_of_colors[0])
-        self.orange_proportion = int(list_of_colors[1])
-        self.red_proportion = int(list_of_colors[2])
-        self.grey_proportion = int(list_of_colors[3])
-
-        self.update()
 
 
 @QmlElement

@@ -3,6 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import '../../my_components'
 import MyModel_py 1.0
+import QtQuick.Shapes
+
 
 
 Rectangle {
@@ -17,6 +19,8 @@ Rectangle {
 
     property string current_index_of_set: ""
 
+    property string volume_button_png: '../../images/volume_button.png'
+
     Title_bar {
         id: titleBar
     }
@@ -28,12 +32,16 @@ Rectangle {
 
     ColumnLayout {
         anchors.centerIn: parent
-        spacing: 20
+        spacing: 10
 
         Rectangle {
             id: custom_result_indicator_rec
             implicitHeight: test_page.height * 0.01
-            implicitWidth: test_page.width * 0.3
+            implicitWidth: rec_for_view.width * 0.9
+            Layout.alignment: Qt.AlignHCenter
+            color: 'transparent'
+            radius: 10
+            clip: true
 
             property int number_of_cards: view_of_cards.count
 
@@ -41,11 +49,72 @@ Rectangle {
             property list<int> list_of_orange: []
             property list<int> list_of_red: []
 
-            CustomPaintedItem {
-                id: custom_result_indicator
-                anchors.fill: parent
-            }
+            RowLayout {
+                anchors.centerIn: parent
+                implicitWidth: parent.width
+                implicitHeight: parent.height
 
+                property int rec_radius: 10
+                spacing: 0
+
+                Result_indicator_shape {
+                    id: advancedShapeGreen
+                    implicitWidth: custom_result_indicator_rec.list_of_green.length / custom_result_indicator_rec.number_of_cards * custom_result_indicator_rec.width
+                    implicitHeight: custom_result_indicator_rec.height
+
+                    tlRadius: advancedShapeGreen.height / 2
+                    trRadius: (advancedShapeOrange.width === 0 && advancedShapeRed.width === 0 && advancedShapeGrey.width === 0) ? advancedShapeGreen.height / 2 : 0
+                    brRadius: (advancedShapeOrange.width === 0 && advancedShapeRed.width === 0 && advancedShapeGrey.width === 0) ? advancedShapeGreen.height / 2 : 0
+                    blRadius: advancedShapeGreen.height / 2
+
+                    fill_color: '#3CB043' // green
+                }
+
+                Result_indicator_shape {
+                    id: advancedShapeOrange
+                    implicitWidth: custom_result_indicator_rec.list_of_orange.length / custom_result_indicator_rec.number_of_cards * custom_result_indicator_rec.width
+                    implicitHeight: custom_result_indicator_rec.height
+
+                    tlRadius: advancedShapeGreen.width === 0 ? advancedShapeOrange.height / 2 : 0
+                    trRadius: (advancedShapeRed.width === 0 && advancedShapeGrey.width === 0) ? advancedShapeOrange.height / 2 : 0
+                    brRadius: (advancedShapeRed.width === 0 && advancedShapeGrey.width === 0) ? advancedShapeOrange.height / 2 : 0
+                    blRadius: advancedShapeGreen.width === 0 ? advancedShapeOrange.height / 2 : 0
+
+                    fill_color: '#FFA500' // orange
+                }
+
+                Result_indicator_shape {
+                    id: advancedShapeRed
+                    implicitWidth: custom_result_indicator_rec.list_of_red.length / custom_result_indicator_rec.number_of_cards * custom_result_indicator_rec.width
+                    implicitHeight: custom_result_indicator_rec.height
+
+                    tlRadius: (advancedShapeGreen.width === 0 && advancedShapeOrange.width === 0) ? advancedShapeRed.height / 2 : 0
+                    trRadius: (advancedShapeGrey.width === 0) ? advancedShapeRed.height / 2 : 0
+                    brRadius: (advancedShapeGrey.width === 0) ? advancedShapeRed.height / 2 : 0
+                    blRadius: (advancedShapeGreen.width === 0 && advancedShapeOrange.width === 0) ? advancedShapeRed.height / 2 : 0
+
+                    fill_color: '#FF0000' // red
+                }
+
+                Result_indicator_shape {
+                    id: advancedShapeGrey
+                    implicitWidth: grey_length / custom_result_indicator_rec.number_of_cards * custom_result_indicator_rec.width
+                    implicitHeight: custom_result_indicator_rec.height
+
+                    property int grey_length: custom_result_indicator_rec.number_of_cards - custom_result_indicator_rec.list_of_green.length - custom_result_indicator_rec.list_of_orange.length - custom_result_indicator_rec.list_of_red.length
+
+                    tlRadius: (advancedShapeGreen.width === 0 && advancedShapeOrange.width === 0 && advancedShapeRed.width === 0) ? advancedShapeGrey.height / 2 : 0
+
+                    // it's default value for grey rectangle since it on the right, so when it appears, it should be always rounded
+                    trRadius: advancedShapeGrey.height / 2
+                    brRadius: advancedShapeGrey.height / 2
+
+                    blRadius: (advancedShapeGreen.width === 0 && advancedShapeOrange.width === 0 && advancedShapeRed.width === 0) ? advancedShapeGrey.height / 2 : 0
+
+                    fill_color: '#C0C0C0' // grey
+                }
+
+            }
         }
 
         Rectangle {
@@ -53,115 +122,15 @@ Rectangle {
             implicitWidth: test_page.width * 0.3
             implicitHeight: test_page.height * 0.5
 
-            color: '#ffffff'
+            color: 'transparent'
             radius: 10
             clip: true
 
-            Text {
-                id: show_hide_answer_text
-                leftPadding: 10
-                rightPadding: 10
-                bottomPadding: 10
-                topPadding: 10
-                anchors.right: parent.right
-                anchors.top: parent.top
-                text: 'Show answer'
-                font.family: "Arial"
-                font.pixelSize: 16
-                z: 3
-
-                MouseArea {
-                    id: show_hide_answer_text_area
-                    height: show_hide_answer_text.height
-                    width: show_hide_answer_text.width
-                    hoverEnabled: true
-
-                    onEntered: {
-                        show_hide_answer_text.color = "blue"
-                        show_hide_answer_text.font.underline = true
-                    }
-
-                    onExited: {
-                        show_hide_answer_text.color = "black"
-                        show_hide_answer_text.font.underline = false
-                    }
-                    onClicked: {
-                        if(view_of_cards.answer_visible === false) {
-                            view_of_cards.answer_visible = true
-                            show_hide_answer_text.text = "Hide answer"
-                        }
-                        else {
-                            view_of_cards.answer_visible = false
-                            show_hide_answer_text.text = 'Show answer'
-                        }
-                    }
-
-                }
-            }
-
-            Rectangle {
-                id: play_sound_button
-                implicitWidth: test_page.width * 0.08
-                implicitHeight: test_page.height * 0.08
-                color: 'salmon'
-                radius: 10
-                z: 3
-
-                Text {
-                    id: play_sound_button_text
-                    anchors.centerIn: play_sound_button
-                    text: 'play sound'
-                }
-
-                MouseArea {
-                    id: play_sound_button_area
-                    anchors.fill: play_sound_button
-                    hoverEnabled: true
-
-                    onEntered: {
-                        play_sound_button.color = '#C0C0C0'
-
-                    }
-                    onExited: {
-                        play_sound_button.color = 'salmon'
-                    }
-
-                    onClicked: {
-                        repeater.model.text_to_speech(view_of_cards.currentIndex)
-                    }
-                }
-            }
-
-            // indicates what was your previous answer an that question
-            Rectangle {
-                id: result_indicator_color
-                implicitHeight: parent.height * 0.1
-                implicitWidth: result_indicator_color.height
-                radius: result_indicator_color.height / 2
-
-                color: custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(0).green :
-                       custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(1).orange :
-                       custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(2).red :
-                       colorModel.get(3).grey
-
-
-                anchors.bottom: parent.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottomMargin: 10
-            }
-
-
             SwipeView {
                 id: view_of_cards
-                interactive: true
+                interactive: false
                 currentIndex: 0
                 anchors.fill: parent
-                property bool answer_visible: false
-
-                onCurrentIndexChanged: {
-                    view_of_cards.answer_visible = false
-                    custom_result_indicator.set_proportion([custom_result_indicator_rec.list_of_green.length, custom_result_indicator_rec.list_of_orange.length, custom_result_indicator_rec.list_of_red.length, custom_result_indicator_rec.number_of_cards - custom_result_indicator_rec.list_of_green.length - custom_result_indicator_rec.list_of_orange.length - custom_result_indicator_rec.list_of_red.length])
-                }
 
                 Repeater{
                     id: repeater
@@ -169,29 +138,146 @@ Rectangle {
                     Loader {
                         active: SwipeView.isCurrentItem || SwipeView.isNextItem || SwipeView.isPreviousItem
                         Rectangle {
-                            id: text_container
-                            width: parent.width
-                            height: parent.height
-
+                            width: rec_for_view.width
+                            height: rec_for_view.height
+                            radius: 20
+                            z: 3
                             color: 'transparent'
+                            clip: true
 
-                            z: 2
-
-                            Column {
-                                spacing: 10
+                            Flipable {
+                                id: flipable
+                                width: parent.width * 0.9
+                                height: parent.height * 0.9
                                 anchors.centerIn: parent
-                                Text {
-                                    id: question
-                                    text: model.question
-                                    width: text_container.width * 0.8
-                                    wrapMode: Text.WordWrap
+
+                                property bool flipped: false
+
+                                front: Rectangle {
+                                    id: question_holder
+                                    width: parent.width
+                                    height: parent.height
+                                    color: 'red'
+                                    // radius: flipable.flipped ? 0 : 20
+                                    radius: 20
+                                    antialiasing: true
+                                    z: 2
+
+                                    Rectangle {
+                                        id: play_sound_button
+                                        implicitWidth: test_page.width * 0.08
+                                        implicitHeight: test_page.width * 0.08
+                                        color: 'transparent'
+                                        radius: play_sound_button.width / 2
+                                        z: 3
+
+                                        Image {
+                                            anchors.centerIn: parent
+                                            width: parent.width * 0.6
+                                            height: parent.height
+                                            fillMode: Image.PreserveAspectFit
+                                            mipmap: true
+                                            source: test_page.volume_button_png
+                                        }
+
+                                        MouseArea {
+                                            id: play_sound_button_area
+                                            anchors.fill: play_sound_button
+                                            hoverEnabled: true
+
+                                            onEntered: {
+                                                play_sound_button.color = '#C0C0C0'
+
+                                            }
+                                            onExited: {
+                                                play_sound_button.color = 'transparent'
+                                            }
+
+                                            onClicked: {
+                                                repeater.model.text_to_speech(view_of_cards.currentIndex)
+                                            }
+                                        }
+                                    }
+
+                                    // indicates what was your previous answer an that question
+                                    Rectangle {
+                                        id: result_indicator_color
+                                        implicitHeight: parent.height * 0.1
+                                        implicitWidth: result_indicator_color.height
+                                        radius: result_indicator_color.height / 2
+
+                                        color: custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(0).green :
+                                               custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(1).orange :
+                                               custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(2).red :
+                                               colorModel.get(3).grey
+
+
+                                        anchors.bottom: parent.bottom
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        anchors.bottomMargin: 10
+                                    }
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        id: question
+                                        text: model.question
+                                        // text: 'hello'
+                                        width: question_holder.width * 0.8
+                                        wrapMode: Text.WordWrap
+                                    }
+                                    Behavior on radius {
+                                        PropertyAnimation {
+                                            duration: 800; easing.type: Easing.InOutQuad
+                                        }
+                                    }
                                 }
-                                Text {
-                                    id: answer
-                                    text: model.answer
-                                    width: text_container.width * 0.8
-                                    wrapMode: Text.WordWrap
-                                    visible: view_of_cards.answer_visible
+                                back: Rectangle {
+                                    id: answer_holder
+                                    color: 'white'
+                                    width: parent.width
+                                    height: parent.height
+                                    // radius: flipable.flipped ? 20 : 0
+                                    radius: 20
+                                    antialiasing: true
+                                    z: 2
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        id: answer
+                                        text: model.answer
+                                        width: answer_holder.width * 0.8
+                                        wrapMode: Text.WordWrap
+                                    }
+                                    Behavior on radius {
+                                        PropertyAnimation {
+                                            duration: 800; easing.type: Easing.InOutQuad
+                                        }
+                                    }
+                                }
+
+
+                                transform: Rotation {
+                                    id: rotation
+                                    origin.x: flipable.width/2
+                                    origin.y: flipable.height/2
+
+                                    // setting axis.y to 1 so it rotates on y axis
+                                    axis.x: 0; axis.y: 1; axis.z: 0
+
+                                    angle: flipable.flipped ? 180 : 0
+
+                                    Behavior on angle {
+                                        NumberAnimation {
+                                            target: rotation; property: 'angle'; easing.type: Easing.OutExpo; duration: 800
+                                        }
+                                    }
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        flipable.flipped = !flipable.flipped
+                                    }
                                 }
                             }
                         }
