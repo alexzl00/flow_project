@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import '../../my_components'
 import MyModel_py 1.0
 
-Rectangle{
+Rectangle {
     id: learning_page
     anchors.fill: parent
     implicitWidth: parent
@@ -30,183 +30,300 @@ Rectangle{
         id: drawer
     }
 
-    ListView{
-        id: sets_view
+    Text {
         anchors.centerIn: parent
-        implicitWidth: learning_page.width * 0.3
-        implicitHeight: learning_page.height * 0.5
-        model: MyModel {}
-        spacing: 10
+        visible: sets_view.count > 0 ? false : true
+        text: "Currently you have no sets."
+        Layout.alignment: Qt.AlignHCenter
+        font {
+            family: 'Arial'
+            pixelSize: 48
+        }
+    }
+    Rectangle {
+        anchors.centerIn: parent
+        implicitWidth: learning_page.width * 0.4
+        implicitHeight: learning_page.height * 0.7
+        color: 'transparent'
+        clip: true
 
-        delegate: Item{
-            implicitWidth: parent.width
-            // it doesnt work parent.height, so learning_page.height (main rectangle's height) should be passed
-            implicitHeight: Math.max(learning_page.height * 0.1, list_view_item_text.contentHeight)
-            Rectangle{
-                id: list_view_item
-                radius: 20
-                implicitWidth: parent.width
-                implicitHeight: parent.height
-                color: 	'#FFF5EE'
+        ListView {
+            id: sets_view
+            // anchors.left: parent.left
+            anchors.centerIn: parent
+            implicitWidth: parent.width * 0.85
+            implicitHeight: parent.height
+            model: MyModel {}
+            spacing: 10
+            clip: true
 
-                Text {
-                    id: list_view_item_text
-                    text: display
-                    anchors.centerIn: parent
-                    width: parent.width * 0.8
-                    wrapMode: Text.WordWrap
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            boundsBehavior: Flickable.StopAtBounds
+
+
+            ScrollBar.vertical: ScrollBar {
+                parent: sets_view.parent
+                anchors.top: sets_view.top
+                anchors.right: sets_view.right
+                anchors.bottom: sets_view.bottom
+
+                hoverEnabled: false
+
+                policy: sets_view.visible ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
+
+                orientation: Qt.Vertical
+                interactive: false
+                pressed: false
+
+                minimumSize: 0.1
+                contentItem: Rectangle {
+                    implicitWidth: 6
+                    radius: width / 2
+                    color: '#71797E'
                 }
-
-                MouseArea {
-                    id: list_view_item_area
-                    anchors.fill: parent
-                    hoverEnabled: true
-
-                    onEntered: {
-                        list_view_item.color = '#C0C0C0'
-                    }
-                    onExited: {
-                        list_view_item.color = '#ffffff'
-                    }
-                    onClicked: {
-                        // we set this property to use it other window.StackView components
-                        // where we need to load the data from chosen set
-                        window.chosen_set_of_cards = list_view_item_text.text
-
-                        sets_view.visible = false
-                        view_of_cards.visible = true
-
-                        // loading the ListView (view_of_cards) set based on chosen set
-                        view_of_cards.model.wordlist_of_set(list_view_item_text.text)
-                        learning_page.chosen_set = list_view_item_text.text
-                    }
+                background: Rectangle {
+                    implicitWidth: 6
+                    color: '#FFF5EE'
                 }
             }
 
+            delegate: Item{
+                implicitWidth: parent.width * 0.92
+                // it doesnt work parent.height, so learning_page.height (main rectangle's height) should be passed
+                implicitHeight: Math.max(learning_page.height * 0.1, list_view_item_text.contentHeight)
+                Rectangle{
+                    id: list_view_item
+                    radius: 20
+                    implicitWidth: parent.width
+                    implicitHeight: parent.height
+                    color: 	'#FFF5EE'
+
+                    Text {
+                        id: list_view_item_text
+                        text: display
+                        anchors.centerIn: parent
+                        width: parent.width * 0.8
+                        wrapMode: Text.Wrap
+                        font.pixelSize: Math.min(window.width / 50, window.height / 50)
+                    }
+
+                    MouseArea {
+                        id: list_view_item_area
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onEntered: {
+                            list_view_item.color = '#C0C0C0'
+                        }
+                        onExited: {
+                            list_view_item.color = '#ffffff'
+                        }
+                        onClicked: {
+                            // we set this property to use it other window.StackView components
+                            // where we need to load the data from chosen set
+                            window.chosen_set_of_cards = list_view_item_text.text
+
+                            sets_view.visible = false
+                            view_of_cards.visible = true
+
+                            // loading the ListView (view_of_cards) set based on chosen set
+                            view_of_cards.model.wordlist_of_set(list_view_item_text.text)
+                            learning_page.chosen_set = list_view_item_text.text
+                        }
+                    }
+                }
+
+            }
         }
     }
 
-    ListView {
-        id: view_of_cards
-        visible: false
-        model: MyModel {}
+
+    Rectangle {
         anchors.centerIn: parent
-        implicitWidth: learning_page.width * 0.3
-        implicitHeight: learning_page.height * 0.5
-        spacing: 10
+        implicitWidth: learning_page.width * 0.35
+        implicitHeight: learning_page.height * 0.7
+        color: 'transparent'
 
+        clip: true
 
-        delegate: Item{
+        ListView {
+            id: view_of_cards
+            visible: false
+            model: MyModel {}
+            anchors.centerIn: parent
             implicitWidth: parent.width
-            id: card_container
-            property int index: DelegateModel.itemsIndex
+            implicitHeight: parent.height
+            spacing: 10
 
-            // it doesnt work parent.height, so learning_page.height (main rectangle's height) should be passed
-            implicitHeight: Math.max(learning_page.height * 0.1, cards_view_item_text.contentHeight)
+            clip: true
 
-            Rectangle{
-                id: cards_view_item
-                radius: 20
-                implicitWidth: parent.width
-                implicitHeight: parent.height
-                color: 	'#FFF5EE'
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
-                Text {
-                    id: cards_view_item_text
-                    width: parent.width * 0.8
-                    text: display
-                    anchors.centerIn: parent
-                    wrapMode: Text.WordWrap
+            boundsBehavior: Flickable.StopAtBounds
+
+
+            ScrollBar.vertical: ScrollBar {
+                parent: view_of_cards.parent
+                anchors.top: view_of_cards.top
+                anchors.right: view_of_cards.right
+                anchors.bottom: view_of_cards.bottom
+
+                hoverEnabled: false
+
+                policy: view_of_cards.visible ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
+
+                orientation: Qt.Vertical
+                interactive: false
+                pressed: false
+
+                minimumSize: 0.1
+                contentItem: Rectangle {
+                    implicitWidth: 6
+                    radius: width / 2
+                    color: '#71797E'
                 }
-                Row {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
+                background: Rectangle {
+                    implicitWidth: 6
+                    color: '#FFF5EE'
+                }
+            }
 
-                    Rectangle {
-                        id: alter_card_button_container
-                        implicitWidth: cards_view_item.height * 0.45
-                        implicitHeight: cards_view_item.height * 0.45
-                        radius: cards_view_item.height / 2
-                        color: 'transparent'
+            delegate: Item{
+                implicitWidth: parent.width * 0.92
+                id: card_container
+                property int index: DelegateModel.itemsIndex
 
-                        anchors.rightMargin: 10
+                // it doesnt work parent.height, so learning_page.height (main rectangle's height) should be passed
+                implicitHeight: Math.min(learning_page.height * 0.1, 200)
 
-                        Image {
-                            id: alter_card_button
-                            anchors.centerIn: parent
+                Rectangle{
+                    id: cards_view_item
+                    radius: 20
+                    implicitWidth: parent.width
+                    implicitHeight: parent.height
+                    color: 	'#FFF5EE'
 
-                            width: parent.width * 0.7
-                            height: parent.height * 0.7
-                            fillMode: Image.PreserveAspectFit
-                            mipmap: true
-                            source: alter_card_button_png
+                    Flickable {
+                        id: card_flickable
+                        width: parent.width * 0.65
+                        height: parent.height * 0.78
 
-                        }
-                        MouseArea {
-                            id: alter_area
-                            anchors.fill: parent
-                            hoverEnabled: true
+                        contentWidth: cards_view_item_text.width
+                        contentHeight: cards_view_item_text.height
 
-                            onEntered: {
-                                alter_card_button_container.color = '#C0C0C0'
-                            }
-                            onExited: {
-                                alter_card_button_container.color = 'transparent'
-                            }
-                            onClicked: {
-                                alter_card.visible = true
-                                alter_card.chosen_card_index = card_container.index
-                                container.setTextToQuestion(view_of_cards.model.question([learning_page.chosen_set, card_container.index]))
-                                container2.setTextToAnswer(view_of_cards.model.answer([learning_page.chosen_set, card_container.index]))
-                            }
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        anchors.leftMargin: 12
+
+                        clip: true
+
+
+                        boundsBehavior: Flickable.StopAtBounds
+
+                        Text {
+                            id: cards_view_item_text
+                            width: card_flickable.width
+
+                            text: display
+                            wrapMode: Text.Wrap
+                            font.pixelSize: Math.min(window.width / 50, window.height / 50)
                         }
                     }
 
-                    Rectangle {
-                        id: trash_button_container
-                        implicitWidth: cards_view_item.height * 0.45
-                        implicitHeight: cards_view_item.height * 0.45
-                        radius: cards_view_item.height / 2
-                        color: 'transparent'
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
 
-                        anchors.rightMargin: 10
+                        Rectangle {
+                            id: alter_card_button_container
+                            implicitWidth: cards_view_item.height * 0.65
+                            implicitHeight: cards_view_item.height * 0.65
+                            radius: cards_view_item.height / 2
+                            color: 'transparent'
 
-                        Image {
-                            id: trash_button
-                            anchors.centerIn: parent
+                            anchors.rightMargin: 10
 
-                            width: parent.width * 0.8
-                            height: parent.height * 0.8
-                            fillMode: Image.PreserveAspectFit
-                            mipmap: true
-                            source: trash_button_png
+                            Image {
+                                id: alter_card_button
+                                anchors.centerIn: parent
+
+                                width: parent.width * 0.7
+                                height: parent.height * 0.7
+                                fillMode: Image.PreserveAspectFit
+                                mipmap: true
+                                source: alter_card_button_png
+
+                            }
+                            MouseArea {
+                                id: alter_area
+                                anchors.fill: parent
+                                hoverEnabled: true
+
+                                onEntered: {
+                                    alter_card_button_container.color = '#C0C0C0'
+                                }
+                                onExited: {
+                                    alter_card_button_container.color = 'transparent'
+                                }
+                                onClicked: {
+                                    alter_card.visible = true
+                                    alter_card.chosen_card_index = card_container.index
+                                    container.setTextToQuestion(view_of_cards.model.question([learning_page.chosen_set, card_container.index]))
+                                    container2.setTextToAnswer(view_of_cards.model.answer([learning_page.chosen_set, card_container.index]))
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            id: trash_button_container
+                            implicitWidth: cards_view_item.height * 0.65
+                            implicitHeight: cards_view_item.height * 0.65
+                            radius: cards_view_item.height / 2
+                            color: 'transparent'
+
+                            anchors.rightMargin: 10
+
+                            Image {
+                                id: trash_button
+                                anchors.centerIn: parent
+
+                                width: parent.width * 0.8
+                                height: parent.height * 0.8
+                                fillMode: Image.PreserveAspectFit
+                                mipmap: true
+                                source: trash_button_png
+
+                            }
+                            MouseArea {
+                                id: delete_area
+                                anchors.fill: parent
+                                hoverEnabled: true
+
+                                onEntered: {
+                                    trash_button_container.color = '#C0C0C0'
+                                }
+                                onExited: {
+                                    trash_button_container.color = 'transparent'
+                                }
+                                onClicked: {
+
+                                    if (view_of_cards.model.delete_card([learning_page.chosen_set, card_container.index]) === true){
+                                        view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
+                                    }
+                                    else {
+                                        sets_view.model.update()
+                                        view_of_cards.visible = false
+                                        sets_view.visible = true
+                                    }
+
+                                }
+                            }
 
                         }
-                        MouseArea {
-                            id: delete_area
-                            anchors.fill: parent
-                            hoverEnabled: true
-
-                            onEntered: {
-                                trash_button_container.color = '#C0C0C0'
-                            }
-                            onExited: {
-                                trash_button_container.color = 'transparent'
-                            }
-                            onClicked: {
-
-                                if (view_of_cards.model.delete_card([learning_page.chosen_set, card_container.index]) === true){
-                                    view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
-                                }
-                                else {
-                                    sets_view.model.update()
-                                    view_of_cards.visible = false
-                                    sets_view.visible = true
-                                }
-
-                            }
-                        }
-
                     }
                 }
             }
@@ -216,7 +333,7 @@ Rectangle{
     Rectangle {
         id: alter_card
         implicitWidth: parent.width * 0.5
-        implicitHeight: parent.height * 0.6
+        implicitHeight: view_of_cards.height
         anchors.centerIn: parent
         color: 'red'
 
@@ -242,15 +359,15 @@ Rectangle{
             Rectangle {
                 id: submit_alter_card_button
                 Layout.alignment: Qt.AlignBottom && Qt.AlignHCenter
-                implicitHeight: parent.height * 0.10
-                implicitWidth: parent.width * 0.30
+                implicitHeight: button_text.contentHeight + 20
+                implicitWidth: button_text.contentWidth + 20
                 color: '#ffffff'
                 radius: 5
                 Text {
                     id: button_text
                     anchors.centerIn: submit_alter_card_button
                     text: 'Accept altering'
-                    font.pixelSize: 16
+                    font.pixelSize: Math.min(window.width / 50, window.height / 50)
                 }
                 MouseArea {
                     anchors.fill:  submit_alter_card_button
@@ -263,12 +380,21 @@ Rectangle{
                         submit_alter_card_button.color = '#ffffff'
                     }
                     onClicked: {
-                        if (view_of_cards.model.alter_card([learning_page.chosen_set, alter_card.chosen_card_index, container.getQuestionText(), container2.getAnswerText()]) === true) {
-                            view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
-                            alter_card.visible = false
+
+                        var question = container.getQuestionText()
+                        var answer = container2.getAnswerText()
+
+                        if (question.length > 0
+                        && answer.length > 0
+                        && question.length <= container.getQuestionMaximumLength()
+                        && answer.length <= container2.getAnswerMaximumLength()) {
+                            if (view_of_cards.model.alter_card([learning_page.chosen_set, alter_card.chosen_card_index, question, answer]) === true) {
+                                view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
+                                alter_card.visible = false
+                            }
+                            container.clearQuestionText()
+                            container2.clearAnswerText()
                         }
-                        container.clearQuestionText()
-                        container2.clearAnswerText()
                     }
                 }
             }
@@ -278,6 +404,11 @@ Rectangle{
     MouseArea {
         id: outside_alter_card_rec
         anchors.fill: learning_page
+
+        // this is necessary for window.startSystemResize, it still will resize, but will not show the resize cursor (Qt.SizeHorCursor)
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
+        anchors.bottomMargin: 10
 
         // is enabled when the alter_card rectangle is visible
         enabled: alter_card.visible
@@ -300,15 +431,16 @@ Rectangle{
 
         Rectangle {
             id: learn_cards_button
-            implicitWidth: learning_page.width * 0.1
-            implicitHeight: learning_page.height * 0.07
+            implicitWidth: learn_card_button_text.contentWidth + 20
+            implicitHeight: learn_card_button_text.contentHeight + 20
             visible: view_of_cards.visible
             color: '#ffffff'
             radius: 10
             Text {
+                id: learn_card_button_text
                 anchors.centerIn: parent
                 text: 'Learn cards'
-                font.pixelSize: 16
+                font.pixelSize: Math.min(window.width / 50, window.height / 50)
             }
 
             MouseArea {
@@ -402,6 +534,12 @@ Rectangle{
     MouseArea {
         id: outside_choose_test_rec
         anchors.fill: learning_page
+
+        // this is necessary for window.startSystemResize, it still will resize, but will not show the resize cursor (Qt.SizeHorCursor)
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
+        anchors.bottomMargin: 10
+
         enabled: false
         onClicked: {
             var rect = choose_test_rec.mapToItem(parent, 0, 0)

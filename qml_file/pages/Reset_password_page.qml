@@ -18,6 +18,10 @@ Rectangle {
         minimizeRestoreButtonVisible: false
     }
 
+    Return_to_log_page_button {
+        id: return_button
+    }
+
     property string email: ''
 
     ColumnLayout {

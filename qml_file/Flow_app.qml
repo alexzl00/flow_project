@@ -11,10 +11,10 @@ ApplicationWindow{
     id: window
     width: 400
     height: 500
-    //minimumWidth: 400
-    //minimumHeight: 500
-    //maximumWidth: 400
-    //maximumHeight: 500
+    minimumWidth: 400
+    minimumHeight: 500
+    maximumWidth: 400
+    maximumHeight: 500
     visible: true
     title: "Flow"
     flags: Qt.Window | Qt.FramelessWindowHint

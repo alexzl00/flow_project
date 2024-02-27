@@ -39,22 +39,38 @@ Rectangle{
                 Layout.alignment: Qt.AlignHCenter
                 font {
                     family: 'Dancing Script'
-                    pixelSize: 90
+                    pixelSize: Math.min(window.width / 8.8, window.height / 8.8)
                 }
             }
             ColumnLayout {
                 TextField {
                     id: add_set_name
                     font.bold: false
-                    font.pointSize: 20
+                    font.pointSize: Math.min(window.width / 50, window.height / 50)
                     placeholderText: 'Add a name of your set'
                     maximumLength: 25
 
-                    background: Rectangle{
+                    verticalAlignment: TextInput.AlignVCenter
+
+                    background: Rectangle {
                         radius: 10
                         implicitWidth: window.width * 0.30
-                        implicitHeight: window.height * 0.08
+                        implicitHeight: window.height * 0.07
 
+                    }
+
+                    Count_letters {
+                        id: count_letters
+                        anchors.bottom: parent.bottom
+                        anchors.right: parent.right
+                        anchors.bottomMargin: 5
+                        anchors.rightMargin: 15
+
+                        maximum: add_set_name.maximumLength
+                    }
+
+                    onTextChanged: {
+                        count_letters.current = add_set_name.text.length
                     }
                 }
 
@@ -71,15 +87,15 @@ Rectangle{
             Rectangle {
                 id: submit_add_card_button
                 Layout.alignment: Qt.AlignBottom && Qt.AlignHCenter
-                implicitHeight: window.height * 0.05
-                implicitWidth: window.width * 0.07
+                implicitHeight: button_text.contentHeight + 20
+                implicitWidth: button_text.contentWidth + 20
                 color: '#ffffff'
                 radius: 5
                 Text {
                     id: button_text
                     anchors.centerIn: submit_add_card_button
                     text: 'Add card'
-                    font.pixelSize: 16
+                    font.pixelSize: Math.min(window.width / 50, window.height / 50)
                 }
                 MouseArea {
                     anchors.fill:  submit_add_card_button
@@ -95,9 +111,15 @@ Rectangle{
                         var question = container.getQuestionText()
                         var answer = container2.getAnswerText()
 
-                        set_op.insert_set_cards([add_set_name.text, question, answer])
-                        container.clearQuestionText()
-                        container2.clearAnswerText()
+                        if (add_set_name.text.length > 0
+                        && question.length > 0
+                        && answer.length > 0
+                        && question.length <= container.getQuestionMaximumLength()
+                        && answer.length <= container2.getAnswerMaximumLength()) {
+                            set_op.insert_set_cards([add_set_name.text, question, answer])
+                            container.clearQuestionText()
+                            container2.clearAnswerText()
+                        }
                     }
                 }
             }

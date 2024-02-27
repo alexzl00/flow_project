@@ -192,7 +192,7 @@ Rectangle {
             Text {
                 id: button_text
                 anchors.centerIn:  submit_button
-                text: 'Submit'
+                text: 'Log in'
                 font.pixelSize: 16
             }
             MouseArea {
@@ -245,15 +245,17 @@ Rectangle {
 
             function onResponse(stringText){
                 if(stringText == 'found'){
+                    window.minimumWidth = 999
+                    window.minimumHeight = 799
+                    window.maximumWidth = Screen.desktopAvailableWidth
+                    window.maximumHeight = Screen.desktopAvailableHeight
+
                     stack.replace(main_flow_page)
                     window.width = 1000
                     window.height = 800
                     window.x = (Screen.desktopAvailableWidth - window.width) / 2
                     window.y = (Screen.desktopAvailableHeight - window.height) / 2
 
-
-                    window.minimumHeight.valueOf()
-                    window.minimumWidth.valueOf()
                 }
 
             }

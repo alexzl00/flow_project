@@ -21,6 +21,12 @@ Rectangle {
 
     property string volume_button_png: '../../images/volume_button.png'
 
+    property string sad_face_button_png: '../../images/sad_button.png' // for bad_button
+    property string neutral_face_button_png: '../../images/neutral_button.png' // for good_button
+    property string happy_face_button_png: '../../images/happy_button.png' // for excellent_button
+    property string return_button_png: '../../images/return_button.png' // for return_button
+
+
     Title_bar {
         id: titleBar
     }
@@ -67,7 +73,7 @@ Rectangle {
                     brRadius: (advancedShapeOrange.width === 0 && advancedShapeRed.width === 0 && advancedShapeGrey.width === 0) ? advancedShapeGreen.height / 2 : 0
                     blRadius: advancedShapeGreen.height / 2
 
-                    fill_color: '#3CB043' // green
+                    fill_color: colorModel.get(0).green
                 }
 
                 Result_indicator_shape {
@@ -80,7 +86,7 @@ Rectangle {
                     brRadius: (advancedShapeRed.width === 0 && advancedShapeGrey.width === 0) ? advancedShapeOrange.height / 2 : 0
                     blRadius: advancedShapeGreen.width === 0 ? advancedShapeOrange.height / 2 : 0
 
-                    fill_color: '#FFA500' // orange
+                    fill_color: colorModel.get(1).orange
                 }
 
                 Result_indicator_shape {
@@ -93,7 +99,7 @@ Rectangle {
                     brRadius: (advancedShapeGrey.width === 0) ? advancedShapeRed.height / 2 : 0
                     blRadius: (advancedShapeGreen.width === 0 && advancedShapeOrange.width === 0) ? advancedShapeRed.height / 2 : 0
 
-                    fill_color: '#FF0000' // red
+                    fill_color: colorModel.get(2).red
                 }
 
                 Result_indicator_shape {
@@ -135,15 +141,18 @@ Rectangle {
                 Repeater{
                     id: repeater
                     model: CardForTest {}
-                    Loader {
+                    delegate: Loader {
                         active: SwipeView.isCurrentItem || SwipeView.isNextItem || SwipeView.isPreviousItem
                         Rectangle {
+                            id: card_holder
                             width: rec_for_view.width
                             height: rec_for_view.height
                             radius: 20
                             z: 3
                             color: 'transparent'
                             clip: true
+
+                            property int itemIndex: index
 
                             Flipable {
                                 id: flipable
@@ -157,7 +166,7 @@ Rectangle {
                                     id: question_holder
                                     width: parent.width
                                     height: parent.height
-                                    color: 'red'
+                                    color: '#fdf7e4'
                                     // radius: flipable.flipped ? 0 : 20
                                     radius: 20
                                     antialiasing: true
@@ -165,8 +174,8 @@ Rectangle {
 
                                     Rectangle {
                                         id: play_sound_button
-                                        implicitWidth: test_page.width * 0.08
-                                        implicitHeight: test_page.width * 0.08
+                                        implicitWidth: parent.height * 0.15
+                                        implicitHeight: parent.height * 0.15
                                         color: 'transparent'
                                         radius: play_sound_button.width / 2
                                         z: 3
@@ -186,7 +195,7 @@ Rectangle {
                                             hoverEnabled: true
 
                                             onEntered: {
-                                                play_sound_button.color = '#C0C0C0'
+                                                play_sound_button.color = '#e6dac7'
 
                                             }
                                             onExited: {
@@ -206,9 +215,9 @@ Rectangle {
                                         implicitWidth: result_indicator_color.height
                                         radius: result_indicator_color.height / 2
 
-                                        color: custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(0).green :
-                                               custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(1).orange :
-                                               custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex) !== -1 ? colorModel.get(2).red :
+                                        color: custom_result_indicator_rec.list_of_green.indexOf(card_holder.itemIndex) !== -1 ? colorModel.get(0).green :
+                                               custom_result_indicator_rec.list_of_orange.indexOf(card_holder.itemIndex) !== -1 ? colorModel.get(1).orange :
+                                               custom_result_indicator_rec.list_of_red.indexOf(card_holder.itemIndex) !== -1 ? colorModel.get(2).red :
                                                colorModel.get(3).grey
 
 
@@ -217,23 +226,65 @@ Rectangle {
                                         anchors.bottomMargin: 10
                                     }
 
-                                    Text {
-                                        anchors.centerIn: parent
-                                        id: question
-                                        text: model.question
-                                        // text: 'hello'
-                                        width: question_holder.width * 0.8
-                                        wrapMode: Text.WordWrap
+                                    Rectangle {
+                                        width: parent.width
+                                        height: 1
+                                        color: '#36454F'
+
+                                        anchors.top: question_flickable.top
+
+                                        antialiasing: true
                                     }
+
+                                    Rectangle {
+                                        width: parent.width
+                                        height: 1
+                                        color: '#36454F'
+
+                                        anchors.bottom: question_flickable.bottom
+
+                                        antialiasing: true
+                                    }
+
+                                    Flickable {
+                                        id: question_flickable
+                                        width: question_holder.width * 0.8
+                                        height: parent.height * 0.7
+
+                                        contentWidth: question.width
+                                        contentHeight: question.height
+
+                                        anchors.left: parent.left
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        anchors.leftMargin: 12
+
+                                        clip: true
+
+
+                                        boundsBehavior: Flickable.StopAtBounds
+
+                                        Text {
+                                            id: question
+
+                                            text: model.question
+                                            width: question_flickable.width
+                                            wrapMode: Text.Wrap
+                                            font.pixelSize: Math.min(window.width / 50, window.height / 50)
+                                        }
+                                    }
+
                                     Behavior on radius {
                                         PropertyAnimation {
                                             duration: 800; easing.type: Easing.InOutQuad
                                         }
                                     }
                                 }
+
+
                                 back: Rectangle {
                                     id: answer_holder
-                                    color: 'white'
+                                    color: '#fdf7e4'
                                     width: parent.width
                                     height: parent.height
                                     // radius: flipable.flipped ? 20 : 0
@@ -241,13 +292,56 @@ Rectangle {
                                     antialiasing: true
                                     z: 2
 
-                                    Text {
-                                        anchors.centerIn: parent
-                                        id: answer
-                                        text: model.answer
-                                        width: answer_holder.width * 0.8
-                                        wrapMode: Text.WordWrap
+                                    Rectangle {
+                                        width: parent.width
+                                        height: 1
+                                        color: '#36454F'
+
+                                        anchors.top: answer_flickable.top
+
+                                        antialiasing: true
                                     }
+
+                                    Rectangle {
+                                        width: parent.width
+                                        height: 1
+                                        color: '#36454F'
+
+                                        anchors.bottom: answer_flickable.bottom
+
+                                        antialiasing: true
+                                    }
+
+                                    Flickable {
+                                        id: answer_flickable
+                                        width: answer_holder.width * 0.8
+                                        height: parent.height * 0.7
+
+                                        contentWidth: answer.width
+                                        contentHeight: answer.height
+
+                                        anchors.left: parent.left
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        anchors.leftMargin: 12
+
+                                        clip: true
+
+
+                                        boundsBehavior: Flickable.StopAtBounds
+
+                                        Text {
+                                            id: answer
+
+                                            anchors.centerIn: parent
+
+                                            text: model.answer
+                                            width: answer_flickable.width
+                                            wrapMode: Text.Wrap
+                                            font.pixelSize: Math.min(window.width / 50, window.height / 50)
+                                        }
+                                    }
+
                                     Behavior on radius {
                                         PropertyAnimation {
                                             duration: 800; easing.type: Easing.InOutQuad
@@ -274,6 +368,7 @@ Rectangle {
                                 }
 
                                 MouseArea {
+                                    id: flipable_mouse_area
                                     anchors.fill: parent
                                     onClicked: {
                                         flipable.flipped = !flipable.flipped
@@ -286,9 +381,9 @@ Rectangle {
 
                 ListModel {
                     id: colorModel
-                    ListElement {green: '#008000'}
-                    ListElement {orange: '#FFA500'}
-                    ListElement {red: '#FF0000'}
+                    ListElement {green: '#1f930f'}
+                    ListElement {orange: '#f76f0b'}
+                    ListElement {red: '#ef1910'}
                     ListElement {grey: '#808080'}
                 }
 
@@ -299,18 +394,24 @@ Rectangle {
     RowLayout {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: parent.height * 0.05
+        anchors.bottomMargin: parent.height * 0.15
 
         Rectangle {
             id: return_button
             implicitWidth: test_page.width * 0.08
             implicitHeight: test_page.height * 0.08
-            color: '#ffffff'
+            color: '#cdeac2'
             radius: 10
 
-            Text {
-                anchors.centerIn: return_button
-                text: 'Return'
+            // '#b2c3b2' sage green
+
+            Image {
+                anchors.centerIn: parent
+                width: parent.width
+                height: parent.height * 0.7
+                fillMode: Image.PreserveAspectFit
+                mipmap: true
+                source: test_page.return_button_png
             }
 
             MouseArea {
@@ -319,16 +420,19 @@ Rectangle {
                 hoverEnabled: true
 
                 onEntered: {
-                    return_button.color = '#C0C0C0'
+                    return_button.color = '#bde8aa'
 
                 }
                 onExited: {
-                    return_button.color = '#ffffff'
+                    return_button.color = '#cdeac2'
                 }
 
                 onClicked: {
                     if (view_of_cards.currentIndex > 0) {
                     view_of_cards.currentIndex = view_of_cards.currentIndex - 1}
+                    else {
+                        view_of_cards.currentIndex = view_of_cards.count - 1
+                    }
                 }
 
             }
@@ -338,12 +442,16 @@ Rectangle {
             id: bad_button
             implicitWidth: test_page.width * 0.08
             implicitHeight: test_page.height * 0.08
-            color: '#ffffff'
+            color: '#ef1910'
             radius: 10
 
-            Text {
-                anchors.centerIn: bad_button
-                text: 'Bad'
+            Image {
+                anchors.centerIn: parent
+                width: parent.width
+                height: parent.height * 0.7
+                fillMode: Image.PreserveAspectFit
+                mipmap: true
+                source: test_page.sad_face_button_png
             }
 
             MouseArea {
@@ -352,11 +460,11 @@ Rectangle {
                 hoverEnabled: true
 
                 onEntered: {
-                    bad_button.color = '#C0C0C0'
+                    bad_button.color = '#d50202'
 
                 }
                 onExited: {
-                    bad_button.color = '#ffffff'
+                    bad_button.color = '#ef1910'
                 }
 
                 onClicked: {
@@ -392,12 +500,16 @@ Rectangle {
             id: good_button
             implicitWidth: test_page.width * 0.08
             implicitHeight: test_page.height * 0.08
-            color: '#ffffff'
+            color: '#f76f0b'
             radius: 10
 
-            Text {
-                anchors.centerIn: good_button
-                text: 'Good'
+            Image {
+                anchors.centerIn: parent
+                width: parent.width
+                height: parent.height * 0.7
+                fillMode: Image.PreserveAspectFit
+                mipmap: true
+                source: test_page.neutral_face_button_png
             }
 
             MouseArea {
@@ -406,11 +518,11 @@ Rectangle {
                 hoverEnabled: true
 
                 onEntered: {
-                    good_button.color = '#C0C0C0'
+                    good_button.color = '#f95504'
 
                 }
                 onExited: {
-                    good_button.color = '#ffffff'
+                    good_button.color = '#f76f0b'
                 }
 
                 onClicked: {
@@ -445,12 +557,16 @@ Rectangle {
             id: excellent_button
             implicitWidth: test_page.width * 0.08
             implicitHeight: test_page.height * 0.08
-            color: '#ffffff'
+            color: '#1f930f'
             radius: 10
 
-            Text {
-                anchors.centerIn: excellent_button
-                text: 'Excellent'
+            Image {
+                anchors.centerIn: parent
+                width: parent.width
+                height: parent.height * 0.7
+                fillMode: Image.PreserveAspectFit
+                mipmap: true
+                source: test_page.happy_face_button_png
             }
 
             MouseArea {
@@ -459,11 +575,11 @@ Rectangle {
                 hoverEnabled: true
 
                 onEntered: {
-                    excellent_button.color = '#C0C0C0'
+                    excellent_button.color = '#107b18'
 
                 }
                 onExited: {
-                    excellent_button.color = '#ffffff'
+                    excellent_button.color = '#1f930f'
                 }
 
                 onClicked: {

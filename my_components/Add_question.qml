@@ -20,20 +20,44 @@ Rectangle {
         question.text = text
     }
 
+    function getQuestionMaximumLength() {
+        return question.maximumLength
+    }
+
+    Count_letters {
+        id: count_letters
+        anchors.bottom: container.bottom
+        anchors.right: container.right
+        anchors.bottomMargin: 5
+        anchors.rightMargin: 15
+
+        maximum: question.maximumLength
+    }
+
     Flickable {
         id: question_flickable
         width: parent.width * 0.9
-        height: parent.height * 0.8
+        height: parent.height * 0.78
         contentWidth: question.width
         contentHeight: question.height
         clip: true
         anchors.centerIn: parent
+
+        boundsBehavior: Flickable.StopAtBounds
 
         TextEdit {
             id: question
             property string placeholderText: "Add an question"
             wrapMode: TextEdit.Wrap
             width: question_flickable.width
+
+            font.pixelSize: Math.min(window.width / 50, window.height / 50)
+
+            property int maximumPossibleLength: 999
+
+
+            // length that can be saved in database
+            property int maximumLength: 200
 
             Text {
                 text: question.placeholderText
@@ -43,7 +67,12 @@ Rectangle {
                 visible: !question.text
             }
 
-            font.pixelSize: 14
+            onTextChanged: {
+                // cuts the text that exceeds maximumLength
+                if (question.text.length > question.maximumLength) remove(question.maximumPossibleLength, question.text.length);
+
+                count_letters.current = question.text.length
+            }
         }
     }
 }

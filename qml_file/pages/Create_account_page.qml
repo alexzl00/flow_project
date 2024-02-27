@@ -19,6 +19,9 @@ Rectangle {
         minimizeRestoreButtonVisible: false
     }
 
+    Return_to_log_page_button {
+        id: return_button
+    }
 
     ColumnLayout{
         id: layout
@@ -153,7 +156,7 @@ Rectangle {
         Text {
             id: button_text
             anchors.centerIn:  submit_button
-            text: 'Submit'
+            text: 'Create'
             font.pixelSize: 16
         }
         MouseArea {
