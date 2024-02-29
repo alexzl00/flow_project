@@ -1,10 +1,8 @@
 import dataclasses
 import threading
 
-from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot, QObject, Signal, QRectF, QSize
-from PySide6.QtGui import QColor, QPainter, QImage, QBrush
+from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot, QObject
 from PySide6.QtQml import QmlElement
-from PySide6.QtQuick import QQuickPaintedItem
 
 import main
 import user_basic_info
@@ -175,7 +173,6 @@ class CardForTest(QAbstractListModel):
 
     @Slot(str)
     def text_to_speech(self, row):
-
         text = self._data[int(row)][1]
 
         t1 = threading.Thread(target=self.text_to_speech_separate_thread, args=[text])

@@ -26,8 +26,14 @@ Rectangle {
         id: titleBar
     }
 
-    MainDrawer{
+    MainDrawer {
         id: drawer
+
+        onIfLearningPageSignal: {
+            sets_view.visible = true
+            view_of_cards.visible = false
+            drawer.runDrawerAnimation()
+        }
     }
 
     Text {
@@ -98,7 +104,7 @@ Rectangle {
                     radius: 20
                     implicitWidth: parent.width
                     implicitHeight: parent.height
-                    color: 	'#FFF5EE'
+                    color: '#fdf7e4'
 
                     Text {
                         id: list_view_item_text
@@ -118,7 +124,7 @@ Rectangle {
                             list_view_item.color = '#C0C0C0'
                         }
                         onExited: {
-                            list_view_item.color = '#ffffff'
+                            list_view_item.color = '#fdf7e4'
                         }
                         onClicked: {
                             // we set this property to use it other window.StackView components
@@ -204,11 +210,11 @@ Rectangle {
                     radius: 20
                     implicitWidth: parent.width
                     implicitHeight: parent.height
-                    color: 	'#FFF5EE'
+                    color: '#fdf7e4'
 
                     Flickable {
                         id: card_flickable
-                        width: parent.width * 0.65
+                        width: parent.width * 0.6
                         height: parent.height * 0.78
 
                         contentWidth: cards_view_item_text.width
@@ -271,6 +277,7 @@ Rectangle {
                                 }
                                 onClicked: {
                                     alter_card.visible = true
+                                    view_of_cards.visible = false
                                     alter_card.chosen_card_index = card_container.index
                                     container.setTextToQuestion(view_of_cards.model.question([learning_page.chosen_set, card_container.index]))
                                     container2.setTextToAnswer(view_of_cards.model.answer([learning_page.chosen_set, card_container.index]))
@@ -335,7 +342,11 @@ Rectangle {
         implicitWidth: parent.width * 0.5
         implicitHeight: view_of_cards.height
         anchors.centerIn: parent
-        color: 'red'
+        // color: 'transparent'
+        color: '#f9efc9'
+        border.color: '#36454F'
+        border.width: 2
+        radius: 20
 
         visible: false
 
@@ -346,14 +357,24 @@ Rectangle {
 
         ColumnLayout {
             anchors.centerIn: parent
-            spacing: 10
+            spacing: 20
+
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                text: 'Alter your card'
+                font.pixelSize: Math.min(window.width / 20, window.height / 20)
+            }
 
             Add_question {
                 id: container
+                border.color: '#36454F'
+                border.width: 2
             }
 
             Add_answer {
                 id: container2
+                border.color: '#36454F'
+                border.width: 2
             }
 
             Rectangle {
@@ -361,12 +382,16 @@ Rectangle {
                 Layout.alignment: Qt.AlignBottom && Qt.AlignHCenter
                 implicitHeight: button_text.contentHeight + 20
                 implicitWidth: button_text.contentWidth + 20
-                color: '#ffffff'
+                color: '#fdf7e4'
                 radius: 5
+
+                border.color: '#36454F'
+                border.width: 2
+
                 Text {
                     id: button_text
                     anchors.centerIn: submit_alter_card_button
-                    text: 'Accept altering'
+                    text: 'Accept'
                     font.pixelSize: Math.min(window.width / 50, window.height / 50)
                 }
                 MouseArea {
@@ -377,7 +402,7 @@ Rectangle {
                         submit_alter_card_button.color = '#C0C0C0'
                     }
                     onExited: {
-                        submit_alter_card_button.color = '#ffffff'
+                        submit_alter_card_button.color = '#fdf7e4'
                     }
                     onClicked: {
 
@@ -391,6 +416,7 @@ Rectangle {
                             if (view_of_cards.model.alter_card([learning_page.chosen_set, alter_card.chosen_card_index, question, answer]) === true) {
                                 view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
                                 alter_card.visible = false
+                                view_of_cards.visible = true
                             }
                             container.clearQuestionText()
                             container2.clearAnswerText()
@@ -420,6 +446,7 @@ Rectangle {
 
             if (mouse.x < rect.x || mouse.x > rect.x + rectWidth || mouse.y < rect.y || mouse.y > rect.y + rectHeight){
                 alter_card.visible = false
+                view_of_cards.visible = true
             }
         }
     }
@@ -434,7 +461,7 @@ Rectangle {
             implicitWidth: learn_card_button_text.contentWidth + 20
             implicitHeight: learn_card_button_text.contentHeight + 20
             visible: view_of_cards.visible
-            color: '#ffffff'
+            color: '#fdf7e4'
             radius: 10
             Text {
                 id: learn_card_button_text
@@ -453,7 +480,7 @@ Rectangle {
 
                 }
                 onExited: {
-                    learn_cards_button.color = '#ffffff'
+                    learn_cards_button.color = '#fdf7e4'
                 }
 
                 onClicked: {
@@ -498,7 +525,7 @@ Rectangle {
                     id: test_option_button
                     implicitWidth: choose_test_rec.width * 0.1
                     implicitHeight: choose_test_rec.height * 0.4
-                    color: '#ffffff'
+                    color: '#fdf7e4'
                     radius: 10
                     Image {
                         anchors.centerIn: parent
@@ -519,7 +546,7 @@ Rectangle {
                             outside_choose_test_rec.enabled = false
                         }
                         onExited: {
-                            test_option_button.color = '#ffffff'
+                            test_option_button.color = '#fdf7e4'
                             outside_choose_test_rec.enabled = true
                         }
                         onClicked: {

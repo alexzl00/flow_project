@@ -8,6 +8,8 @@ Rectangle {
     implicitHeight: window.height * 0.17
     radius: 10
 
+    color: '#fdf7e4'
+
     function getAnswerText() {
         return answer.text
     }

@@ -56,7 +56,7 @@ Rectangle{
                         radius: 10
                         implicitWidth: window.width * 0.30
                         implicitHeight: window.height * 0.07
-
+                        color: '#fdf7e4'
                     }
 
                     Count_letters {
@@ -89,7 +89,7 @@ Rectangle{
                 Layout.alignment: Qt.AlignBottom && Qt.AlignHCenter
                 implicitHeight: button_text.contentHeight + 20
                 implicitWidth: button_text.contentWidth + 20
-                color: '#ffffff'
+                color: '#fdf7e4'
                 radius: 5
                 Text {
                     id: button_text
@@ -105,7 +105,7 @@ Rectangle{
                         submit_add_card_button.color = '#C0C0C0'
                     }
                     onExited: {
-                        submit_add_card_button.color = '#ffffff'
+                        submit_add_card_button.color = '#fdf7e4'
                     }
                     onClicked: {
                         var question = container.getQuestionText()

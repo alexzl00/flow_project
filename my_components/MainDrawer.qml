@@ -10,7 +10,14 @@ Rectangle {
     color: '#5cdb95'
 
     // properties
-    property bool is_drawn: false
+    property bool is_drawn: drawer.width === drawerWidthIfDrawn ? true : false
+
+    property int drawerWidthIfDrawn: window.width * 0.2
+    property int drawerWidthIfNotDrawn: window.width * 0.1
+
+    function runDrawerAnimation(){
+        animation_menu.running = true;
+    }
 
     // button sources
     property string menu_button: '../images/menu_button.png'
@@ -19,6 +26,9 @@ Rectangle {
     property string add_set_button: '../images/add_set_button.png'
 
     property int drawer_animation_duration: 1000
+
+    // for the learning page, to catch if the learning button is clicked when this page is already loaded
+    signal ifLearningPageSignal()
 
 
     ColumnLayout{
@@ -30,7 +40,7 @@ Rectangle {
             id: animation_menu
             target: drawer
             property: 'width'
-            to: if(drawer.width == window.width * 0.1) return window.width * 0.2; else return window.width * 0.1
+            to: if(drawer.width == drawerWidthIfNotDrawn) return drawerWidthIfDrawn; else return drawerWidthIfNotDrawn
             duration: drawer.drawer_animation_duration
             easing.type: Easing.InOutQuint
         }
@@ -68,12 +78,6 @@ Rectangle {
                     animation_menu.running = true
                     menu_area.enabled = false
                     drawer_animation_timer.running = true
-                    if (drawer.is_drawn === true){
-                        drawer.is_drawn = false
-                    }
-                    else {
-                        drawer.is_drawn = true
-                    }
                 }
             }
         }
@@ -148,8 +152,8 @@ Rectangle {
                 }
                 onClicked: {
                     stack.replace(learning_page)
+                    ifLearningPageSignal()
                 }
-
             }
         }
         Rectangle {

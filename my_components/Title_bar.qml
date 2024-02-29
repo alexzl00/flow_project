@@ -113,7 +113,6 @@ Rectangle {
                     maximize_restore_button.color = 'transparent'
                 }
                 onClicked: {
-                    drawer.is_drawn = false
                     internal.maximize_restore()
                 }
             }

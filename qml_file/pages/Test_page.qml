@@ -138,6 +138,10 @@ Rectangle {
                 currentIndex: 0
                 anchors.fill: parent
 
+                property bool flipableFlipped: false
+
+                property int flip_duration: 800
+
                 Repeater{
                     id: repeater
                     model: CardForTest {}
@@ -160,14 +164,13 @@ Rectangle {
                                 height: parent.height * 0.9
                                 anchors.centerIn: parent
 
-                                property bool flipped: false
+                                property bool flipped: view_of_cards.flipableFlipped
 
                                 front: Rectangle {
                                     id: question_holder
                                     width: parent.width
                                     height: parent.height
                                     color: '#fdf7e4'
-                                    // radius: flipable.flipped ? 0 : 20
                                     radius: 20
                                     antialiasing: true
                                     z: 2
@@ -248,35 +251,36 @@ Rectangle {
 
                                     Flickable {
                                         id: question_flickable
-                                        width: question_holder.width * 0.8
+                                        width: Math.min(question_holder.width * 0.8, question.contentWidth)
                                         height: parent.height * 0.7
 
-                                        contentWidth: question.width
-                                        contentHeight: question.height
+                                        contentWidth: question_flickable.width
+                                        contentHeight: Math.max(question.height, question_flickable.height)
 
-                                        anchors.left: parent.left
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        anchors.leftMargin: 12
+                                        anchors.centerIn: parent
 
                                         clip: true
 
 
                                         boundsBehavior: Flickable.StopAtBounds
 
-                                        Text {
-                                            id: question
-
-                                            text: model.question
+                                        Rectangle {
+                                            id: question_text_holder
                                             width: question_flickable.width
-                                            wrapMode: Text.Wrap
-                                            font.pixelSize: Math.min(window.width / 50, window.height / 50)
-                                        }
-                                    }
+                                            height: question.contentHeight
+                                            anchors.centerIn: parent
+                                            color: 'transparent'
 
-                                    Behavior on radius {
-                                        PropertyAnimation {
-                                            duration: 800; easing.type: Easing.InOutQuad
+                                            Text {
+                                                id: question
+
+                                                anchors.centerIn: question_text_holder
+
+                                                text: model.question
+                                                width: question_text_holder.width
+                                                wrapMode: Text.Wrap
+                                                font.pixelSize: Math.min(window.width / 50, window.height / 50)
+                                            }
                                         }
                                     }
                                 }
@@ -314,37 +318,36 @@ Rectangle {
 
                                     Flickable {
                                         id: answer_flickable
-                                        width: answer_holder.width * 0.8
+                                        width: Math.min(answer_holder.width * 0.8, answer.contentWidth)
                                         height: parent.height * 0.7
 
-                                        contentWidth: answer.width
-                                        contentHeight: answer.height
+                                        contentWidth: answer_flickable.width
+                                        contentHeight: Math.max(answer.height, answer_flickable.height)
 
-                                        anchors.left: parent.left
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        anchors.leftMargin: 12
+                                        anchors.centerIn: parent
 
                                         clip: true
 
 
                                         boundsBehavior: Flickable.StopAtBounds
 
-                                        Text {
-                                            id: answer
-
-                                            anchors.centerIn: parent
-
-                                            text: model.answer
+                                        Rectangle {
+                                            id: answer_text_holder
                                             width: answer_flickable.width
-                                            wrapMode: Text.Wrap
-                                            font.pixelSize: Math.min(window.width / 50, window.height / 50)
-                                        }
-                                    }
+                                            height: answer.contentHeight
+                                            anchors.centerIn: parent
+                                            color: 'transparent'
 
-                                    Behavior on radius {
-                                        PropertyAnimation {
-                                            duration: 800; easing.type: Easing.InOutQuad
+                                            Text {
+                                                id: answer
+
+                                                anchors.centerIn: answer_text_holder
+
+                                                text: model.answer
+                                                width: answer_text_holder.width
+                                                wrapMode: Text.Wrap
+                                                font.pixelSize: Math.min(window.width / 50, window.height / 50)
+                                            }
                                         }
                                     }
                                 }
@@ -362,7 +365,7 @@ Rectangle {
 
                                     Behavior on angle {
                                         NumberAnimation {
-                                            target: rotation; property: 'angle'; easing.type: Easing.OutExpo; duration: 800
+                                            target: rotation; property: 'angle'; easing.type: Easing.OutExpo; duration: view_of_cards.flip_duration
                                         }
                                     }
                                 }
@@ -371,7 +374,7 @@ Rectangle {
                                     id: flipable_mouse_area
                                     anchors.fill: parent
                                     onClicked: {
-                                        flipable.flipped = !flipable.flipped
+                                        view_of_cards.flipableFlipped  = !view_of_cards.flipableFlipped
                                     }
                                 }
                             }
@@ -414,6 +417,22 @@ Rectangle {
                 source: test_page.return_button_png
             }
 
+            Timer {
+                id: flip_timer1
+                interval: view_of_cards.flip_duration
+                repeat: false
+                running: false
+
+
+                onTriggered: {
+                    if (view_of_cards.currentIndex > 0) {
+                    view_of_cards.currentIndex = view_of_cards.currentIndex - 1}
+                    else {
+                        view_of_cards.currentIndex = view_of_cards.count - 1
+                    }
+                }
+            }
+
             MouseArea {
                 id: return_button_area
                 anchors.fill: return_button
@@ -428,13 +447,16 @@ Rectangle {
                 }
 
                 onClicked: {
-                    if (view_of_cards.currentIndex > 0) {
-                    view_of_cards.currentIndex = view_of_cards.currentIndex - 1}
-                    else {
-                        view_of_cards.currentIndex = view_of_cards.count - 1
+                    if (view_of_cards.flipableFlipped) {
+                        flip_timer1.interval = view_of_cards.flip_duration
+                    } else {
+                        flip_timer1.interval = 0
                     }
-                }
 
+                    view_of_cards.flipableFlipped = false
+
+                    flip_timer1.start()
+                }
             }
         }
 
@@ -454,21 +476,13 @@ Rectangle {
                 source: test_page.sad_face_button_png
             }
 
-            MouseArea {
-                id: bad_button_area
-                anchors.fill: bad_button
-                hoverEnabled: true
+            Timer {
+                id: flip_timer2
+                interval: view_of_cards.flip_duration
+                repeat: false
+                running: false
 
-                onEntered: {
-                    bad_button.color = '#d50202'
-
-                }
-                onExited: {
-                    bad_button.color = '#ef1910'
-                }
-
-                onClicked: {
-
+                onTriggered: {
                     var index_of_red = custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex)
                     if (index_of_red === -1) {
                         custom_result_indicator_rec.list_of_red.push(view_of_cards.currentIndex)
@@ -494,6 +508,33 @@ Rectangle {
                 }
 
             }
+
+            MouseArea {
+                id: bad_button_area
+                anchors.fill: bad_button
+                hoverEnabled: true
+
+                onEntered: {
+                    bad_button.color = '#d50202'
+
+                }
+                onExited: {
+                    bad_button.color = '#ef1910'
+                }
+
+                onClicked: {
+                    if (view_of_cards.flipableFlipped) {
+                        flip_timer2.interval = view_of_cards.flip_duration
+                    } else {
+                        flip_timer2.interval = 0
+                    }
+
+                    view_of_cards.flipableFlipped = false
+
+                    flip_timer2.start()
+                }
+
+            }
         }
 
         Rectangle {
@@ -511,22 +552,13 @@ Rectangle {
                 mipmap: true
                 source: test_page.neutral_face_button_png
             }
+            Timer {
+                id: flip_timer3
+                interval: view_of_cards.flip_duration
+                repeat: false
+                running: false
 
-            MouseArea {
-                id: good_button_button_area
-                anchors.fill: good_button
-                hoverEnabled: true
-
-                onEntered: {
-                    good_button.color = '#f95504'
-
-                }
-                onExited: {
-                    good_button.color = '#f76f0b'
-                }
-
-                onClicked: {
-
+                onTriggered: {
                     var index_of_orange = custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex)
                     if (index_of_orange === -1) {
                         custom_result_indicator_rec.list_of_orange.push(view_of_cards.currentIndex)
@@ -549,6 +581,32 @@ Rectangle {
                         view_of_cards.currentIndex = 0
                     }
                 }
+            }
+
+            MouseArea {
+                id: good_button_button_area
+                anchors.fill: good_button
+                hoverEnabled: true
+
+                onEntered: {
+                    good_button.color = '#f95504'
+
+                }
+                onExited: {
+                    good_button.color = '#f76f0b'
+                }
+
+                onClicked: {
+                    if (view_of_cards.flipableFlipped) {
+                        flip_timer3.interval = view_of_cards.flip_duration
+                    } else {
+                        flip_timer3.interval = 0
+                    }
+
+                    view_of_cards.flipableFlipped = false
+
+                    flip_timer3.start()
+                }
 
             }
         }
@@ -569,21 +627,13 @@ Rectangle {
                 source: test_page.happy_face_button_png
             }
 
-            MouseArea {
-                id: excellent_button_area
-                anchors.fill: excellent_button
-                hoverEnabled: true
+            Timer {
+                id: flip_timer4
+                interval: view_of_cards.flip_duration
+                repeat: false
+                running: false
 
-                onEntered: {
-                    excellent_button.color = '#107b18'
-
-                }
-                onExited: {
-                    excellent_button.color = '#1f930f'
-                }
-
-                onClicked: {
-
+                onTriggered: {
                     var index_of_green = custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex)
                     if (index_of_green === -1) {
                         custom_result_indicator_rec.list_of_green.push(view_of_cards.currentIndex)
@@ -605,6 +655,32 @@ Rectangle {
                     else {
                         view_of_cards.currentIndex = 0
                     }
+                }
+            }
+
+            MouseArea {
+                id: excellent_button_area
+                anchors.fill: excellent_button
+                hoverEnabled: true
+
+                onEntered: {
+                    excellent_button.color = '#107b18'
+
+                }
+                onExited: {
+                    excellent_button.color = '#1f930f'
+                }
+
+                onClicked: {
+                    if (view_of_cards.flipableFlipped) {
+                        flip_timer4.interval = view_of_cards.flip_duration
+                    } else {
+                        flip_timer4.interval = 0
+                    }
+
+                    view_of_cards.flipableFlipped = false
+
+                    flip_timer4.start()
                 }
 
             }
