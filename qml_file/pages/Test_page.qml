@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import '../../my_components'
+import '../../my_components/components_for_test_page'
 import MyModel_py 1.0
 import QtQuick.Shapes
 
@@ -158,6 +159,8 @@ Rectangle {
 
                             property int itemIndex: index
 
+                            property string answer: model.answer
+
                             Flipable {
                                 id: flipable
                                 width: parent.width * 0.9
@@ -206,7 +209,7 @@ Rectangle {
                                             }
 
                                             onClicked: {
-                                                repeater.model.text_to_speech(view_of_cards.currentIndex)
+                                                text_to_speech.play_text(answer.text)
                                             }
                                         }
                                     }
@@ -399,7 +402,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: parent.height * 0.15
 
-        Rectangle {
+        Card_assessment_button {
             id: return_button
             implicitWidth: test_page.width * 0.08
             implicitHeight: test_page.height * 0.08
@@ -407,6 +410,10 @@ Rectangle {
             radius: 10
 
             // '#b2c3b2' sage green
+
+            main_color: '#cdeac2'
+            on_hover_color: '#bde8aa'
+            image_source: test_page.return_button_png
 
             Image {
                 anchors.centerIn: parent
@@ -439,11 +446,11 @@ Rectangle {
                 hoverEnabled: true
 
                 onEntered: {
-                    return_button.color = '#bde8aa'
+                    return_button.color = return_button.on_hover_color
 
                 }
                 onExited: {
-                    return_button.color = '#cdeac2'
+                    return_button.color = return_button.main_color
                 }
 
                 onClicked: {
@@ -460,21 +467,12 @@ Rectangle {
             }
         }
 
-        Rectangle {
+        Card_assessment_button {
             id: bad_button
-            implicitWidth: test_page.width * 0.08
-            implicitHeight: test_page.height * 0.08
-            color: '#ef1910'
-            radius: 10
 
-            Image {
-                anchors.centerIn: parent
-                width: parent.width
-                height: parent.height * 0.7
-                fillMode: Image.PreserveAspectFit
-                mipmap: true
-                source: test_page.sad_face_button_png
-            }
+            main_color: '#ef1910'
+            on_hover_color: '#d50202'
+            image_source: test_page.sad_face_button_png
 
             Timer {
                 id: flip_timer2
@@ -515,11 +513,11 @@ Rectangle {
                 hoverEnabled: true
 
                 onEntered: {
-                    bad_button.color = '#d50202'
+                    bad_button.color = bad_button.on_hover_color
 
                 }
                 onExited: {
-                    bad_button.color = '#ef1910'
+                    bad_button.color = bad_button.main_color
                 }
 
                 onClicked: {
@@ -537,21 +535,13 @@ Rectangle {
             }
         }
 
-        Rectangle {
+        Card_assessment_button {
             id: good_button
-            implicitWidth: test_page.width * 0.08
-            implicitHeight: test_page.height * 0.08
-            color: '#f76f0b'
-            radius: 10
 
-            Image {
-                anchors.centerIn: parent
-                width: parent.width
-                height: parent.height * 0.7
-                fillMode: Image.PreserveAspectFit
-                mipmap: true
-                source: test_page.neutral_face_button_png
-            }
+            main_color: '#f76f0b'
+            on_hover_color: '#f95504'
+            image_source: test_page.neutral_face_button_png
+
             Timer {
                 id: flip_timer3
                 interval: view_of_cards.flip_duration
@@ -589,11 +579,11 @@ Rectangle {
                 hoverEnabled: true
 
                 onEntered: {
-                    good_button.color = '#f95504'
+                    good_button.color = good_button.on_hover_color
 
                 }
                 onExited: {
-                    good_button.color = '#f76f0b'
+                    good_button.color = good_button.main_color
                 }
 
                 onClicked: {
@@ -611,21 +601,13 @@ Rectangle {
             }
         }
 
-        Rectangle {
+        Card_assessment_button {
             id: excellent_button
-            implicitWidth: test_page.width * 0.08
-            implicitHeight: test_page.height * 0.08
-            color: '#1f930f'
-            radius: 10
 
-            Image {
-                anchors.centerIn: parent
-                width: parent.width
-                height: parent.height * 0.7
-                fillMode: Image.PreserveAspectFit
-                mipmap: true
-                source: test_page.happy_face_button_png
-            }
+            on_hover_color: '#107b18'
+            main_color: '#1f930f'
+            image_source: test_page.happy_face_button_png
+
 
             Timer {
                 id: flip_timer4
@@ -664,11 +646,11 @@ Rectangle {
                 hoverEnabled: true
 
                 onEntered: {
-                    excellent_button.color = '#107b18'
+                    excellent_button.color = excellent_button.on_hover_color
 
                 }
                 onExited: {
-                    excellent_button.color = '#1f930f'
+                    excellent_button.color = excellent_button.main_color
                 }
 
                 onClicked: {
@@ -691,4 +673,13 @@ Rectangle {
         repeater.model.cards_for_test(window.chosen_set_of_cards)
     }
 
+    Connections {
+        target: text_to_speech
+
+        function onPlay_response(response) {
+            if (response === 'True') {
+                console.log('true')
+            }
+        }
+    }
 }

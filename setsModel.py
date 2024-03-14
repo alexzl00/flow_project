@@ -1,5 +1,7 @@
 import dataclasses
 import threading
+import textToSpeechPlayer
+import time
 
 from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot, QObject
 from PySide6.QtQml import QmlElement
@@ -151,7 +153,7 @@ class CardForTest(QAbstractListModel):
     @Slot(str, result=bool)
     def cards_for_test(self, set_name):
         parent = QModelIndex()
-        new_data = user_basic_info.UserData.user_sets[set_name]
+        new_data = user_basic_info.UserData.user_sets[set_name][::-1]
         position = self.rowCount()
 
         if len(new_data) > 0:
@@ -160,23 +162,6 @@ class CardForTest(QAbstractListModel):
                 self._data.insert(position, (f'{i["question"]}', f'{i["answer"]}'))
             self.endInsertRows()
         return True
-
-    @staticmethod
-    def text_to_speech_separate_thread(text):
-        engine = pyttsx3.init()
-
-        engine.setProperty('rate', 140)
-        engine.setProperty('volume', 0.7)
-
-        engine.say(text)
-        engine.runAndWait()
-
-    @Slot(str)
-    def text_to_speech(self, row):
-        text = self._data[int(row)][1]
-
-        t1 = threading.Thread(target=self.text_to_speech_separate_thread, args=[text])
-        t1.start()
 
 
 @QmlElement

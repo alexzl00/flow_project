@@ -36,15 +36,17 @@ Rectangle {
         Rectangle {
             id: email_field_holder
             width: 260
-            height: email_field.height
+            height: email_field.height + 10
             radius: 10
 
             TextField {
                 id: email_field
                 font.bold: false
-                font.pointSize: 20
+                font.pointSize: 14
                 placeholderText: 'Enter your email'
                 width: parent.width
+
+                anchors.verticalCenter: parent.verticalCenter
 
                 background: Rectangle{
                     radius: email_field_holder.radius
@@ -59,21 +61,23 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
-
+            color: '#d50202'
         }
         Rectangle {
             id: password_field_holder
-            width: 260
-            height: password_field.height
+            width: email_field_holder.width
+            height: email_field_holder.height
             radius: 10
 
             TextField {
                 id: password_field
                 font.bold: false
-                font.pointSize: 20
+                font.pointSize: 14
                 placeholderText: 'Enter your password'
                 echoMode: TextInput.Password
                 width: parent.width
+
+                anchors.verticalCenter: parent.verticalCenter
 
                 background: Rectangle{
                     id: log_p
@@ -89,6 +93,7 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            color: '#d50202'
         }
 
         Switch{
@@ -132,78 +137,93 @@ Rectangle {
 
             }
         }
-        Text {
-            id: create_account
-            text: 'Create account?'
-            color: 'black'
-            font.underline: false
 
-            MouseArea{
-                width: create_account.width + 10
-                height: create_account.height
-                hoverEnabled: true
-                onEntered: {
-                    create_account.font.underline = true
-                    create_account.color = 'blue'
-                }
-                onExited: {
-                    create_account.font.underline = false
-                    create_account.color = 'black'
-                }
-                onClicked: {
-                    stack.replace(create_account_page)
-                }
+        RowLayout {
+            spacing: 20
 
+            Text {
+                id: create_account
+                text: 'Create account?'
+                color: 'black'
+                font.underline: false
+
+                MouseArea{
+                    width: create_account.width + 10
+                    height: create_account.height
+                    hoverEnabled: true
+                    onEntered: {
+                        create_account.font.underline = true
+                        create_account.color = 'blue'
+                    }
+                    onExited: {
+                        create_account.font.underline = false
+                        create_account.color = 'black'
+                    }
+                    onClicked: {
+                        stack.replace(create_account_page)
+                    }
+
+                }
+            }
+            Text {
+                id: forgot_password
+                text: 'Forgot password?'
+                color: 'black'
+                font.underline: false
+
+                MouseArea{
+                    width: forgot_password.width + 10
+                    height: forgot_password.height
+                    hoverEnabled: true
+                    onEntered: {
+                        forgot_password.font.underline = true
+                        forgot_password.color = 'blue'
+
+                    }
+                    onExited: {
+                        forgot_password.font.underline = false
+                        forgot_password.color = 'black'
+                    }
+
+                    onClicked: {
+                        stack.replace(reset_password_page)
+                    }
+
+                }
             }
         }
-        Text {
-            id: forgot_password
-            text: 'Forgot password?'
-            color: 'black'
-            font.underline: false
 
-            MouseArea{
-                width: forgot_password.width + 10
-                height: forgot_password.height
-                hoverEnabled: true
-                onEntered: {
-                    forgot_password.font.underline = true
-                    forgot_password.color = 'blue'
-
-                }
-                onExited: {
-                    forgot_password.font.underline = false
-                    forgot_password.color = 'black'
-                }
-
-                onClicked: {
-                    stack.replace(reset_password_page)
-                }
-
-            }
+        Item {
+            height: 8
         }
+
         Rectangle {
             id: submit_button
             Layout.alignment: Qt.AlignVCenter
-            height: 30
-            width: 60
-            color: '#ffffff'
-            radius: 5
+            height: 36
+            width: email_field_holder.width
+            color: '#28282B'
+            radius: 8
+
+            border.width: 2
+            border.color: '#AFE1AF'
+
             Text {
                 id: button_text
                 anchors.centerIn:  submit_button
                 text: 'Log in'
-                font.pixelSize: 16
+                font.pixelSize: 18
+                color: '#F5F5DC'
             }
             MouseArea {
                 anchors.fill:  submit_button
                 hoverEnabled: true
 
                 onEntered: {
-                    submit_button.color = '#C0C0C0'
+                    submit_button.color = '#1B1212'
                 }
                 onExited: {
-                    submit_button.color = '#ffffff'
+                    submit_button.color = '#28282B'
                 }
                 onClicked: {
                     check_email_password.check_email_forbidden(email_field.text)

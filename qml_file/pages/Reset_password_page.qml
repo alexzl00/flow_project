@@ -47,11 +47,14 @@ Rectangle {
             TextField {
                 id: email_field
                 font.bold: false
-                font.pointSize: 20
+                font.pointSize: 14
                 placeholderText: 'Enter your email'
                 width: parent.width
+                height: email_field.contentHeight + 10
 
                 enabled: true
+
+                anchors.verticalCenter: parent.verticalCenter
 
                 background: Rectangle{
                     radius: email_field_holder.radius
@@ -66,22 +69,25 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
-
+            color: '#d50202'
         }
 
         Rectangle {
             id: confirm_token
-            width: 260
-            height: confirm_token_field.height
+            width: email_field_holder.width
+            height: email_field_holder.height
             radius: 10
 
             TextField {
                 id: confirm_token_field
                 font.bold: false
-                font.pointSize: 20
+                font.pointSize: 14
                 placeholderText: 'Enter sent code'
                 width: parent.width
+                height: email_field.contentHeight + 10
                 enabled: false
+
+                anchors.verticalCenter: parent.verticalCenter
 
                 background: Rectangle{
                     radius: confirm_token.radius
@@ -97,22 +103,26 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            color: '#d50202'
         }
 
         Rectangle {
             id: reset_password
-            width: 260
-            height: reset_password_field.height
+            width: email_field_holder.width
+            height: email_field_holder.height
             radius: 10
 
             TextField {
                 id: reset_password_field
                 font.bold: false
-                font.pointSize: 20
+                font.pointSize: 14
                 placeholderText: 'Enter new password'
                 width: parent.width
+                height: email_field.contentHeight + 10
 
                 enabled: false
+
+                anchors.verticalCenter: parent.verticalCenter
 
                 background: Rectangle{
                     radius: reset_password.radius
@@ -126,31 +136,36 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
-
+            color: '#d50202'
         }
 
         Rectangle {
             id: submit_button
             Layout.alignment: Qt.AlignVCenter
-            height: 30
-            width: 100
-            color: '#ffffff'
-            radius: 5
+            height: 36
+            width: email_field_holder.width
+            color: '#28282B'
+            radius: 8
+
+            border.width: 2
+            border.color: '#AFE1AF'
+
             Text {
                 id: button_text
                 anchors.centerIn:  submit_button
                 text: 'Send code'
                 font.pixelSize: 16
+                color: '#F5F5DC'
             }
             MouseArea {
                 anchors.fill:  submit_button
                 hoverEnabled: true
 
                 onEntered: {
-                    submit_button.color = '#C0C0C0'
+                    submit_button.color = '#1B1212'
                 }
                 onExited: {
-                    submit_button.color = '#ffffff'
+                    submit_button.color = '#28282B'
                 }
                 onClicked: {
                      if (reset_password_field.enabled === true){

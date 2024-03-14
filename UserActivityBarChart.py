@@ -36,7 +36,7 @@ class Chart(QObject):
         for i in grouped_data:
             # screen time is in hours converted from seconds
             # i[1] these are seconds in type int
-            screen_time = i[1] / 3600
+            screen_time = round(i[1] / 3600, 2)
 
             # saves the day of week with the screen time on that day in seconds
             # i[0] is day of using type str

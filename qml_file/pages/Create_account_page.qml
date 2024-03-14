@@ -47,17 +47,19 @@ Rectangle {
 
         Rectangle {
             id: email_field_holder
-            height: new_email_field.height
-            width: 250
+            height: new_email_field.height + 10
+            width: 260
             radius: 10
             z: 1
 
             TextField {
                 id: new_email_field
                 font.bold: false
-                font.pointSize: 20
+                font.pointSize: 14
                 width: parent.width
                 placeholderText: 'Set your email'
+
+                anchors.verticalCenter: parent.verticalCenter
 
                 background: Rectangle{
                     radius: email_field_holder.radius
@@ -73,21 +75,24 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            color: '#d50202'
         }
 
         Rectangle {
             id: password_field_holder
-            width: 250
-            height: new_password_field.height
+            width: email_field_holder.width
+            height: email_field_holder.height
             radius: 10
 
             TextField {
                 id: new_password_field
                 font.bold: false
-                font.pointSize: 20
+                font.pointSize: 14
                 placeholderText: 'Set your password'
                 echoMode: TextInput.Password
                 width: parent.width
+
+                anchors.verticalCenter: parent.verticalCenter
 
                 background: Rectangle{
                     radius: password_field_holder.radius
@@ -102,6 +107,7 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            color: '#d50202'
         }
 
         Switch{
@@ -149,25 +155,30 @@ Rectangle {
     Rectangle {
         id: submit_button
         Layout.alignment: Qt.AlignVCenter
-        height: 30
-        width: 60
-        color: '#ffffff'
-        radius: 5
+        height: 36
+        width: email_field_holder.width
+        color: '#28282B'
+        radius: 8
+
+        border.width: 2
+        border.color: '#AFE1AF'
+
         Text {
             id: button_text
             anchors.centerIn:  submit_button
-            text: 'Create'
-            font.pixelSize: 16
+            text: 'Create account'
+            font.pixelSize: 18
+            color: '#F5F5DC'
         }
         MouseArea {
             anchors.fill:  submit_button
             hoverEnabled: true
 
             onEntered: {
-                submit_button.color = '#C0C0C0'
+                submit_button.color = '#1B1212'
             }
             onExited: {
-                submit_button.color = '#ffffff'
+                submit_button.color = '#28282B'
             }
             onClicked: {
                 check_email_password.check_email_forbidden(new_email_field.text)

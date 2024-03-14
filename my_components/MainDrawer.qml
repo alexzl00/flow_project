@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import 'drawer_button_component'
 
 Rectangle {
     id: drawer
@@ -12,7 +13,7 @@ Rectangle {
     // properties
     property bool is_drawn: drawer.width === drawerWidthIfDrawn ? true : false
 
-    property int drawerWidthIfDrawn: window.width * 0.2
+    property int drawerWidthIfDrawn: window.width * 0.15
     property int drawerWidthIfNotDrawn: window.width * 0.1
 
     function runDrawerAnimation(){
@@ -20,10 +21,10 @@ Rectangle {
     }
 
     // button sources
-    property string menu_button: '../images/menu_button.png'
-    property string home_button: '../images/home_button.png'
-    property string exercise_button: '../images/exercise_button.png'
-    property string add_set_button: '../images/add_set_button.png'
+    property string menu_button: '../images/menu_button_white.png'
+    property string home_button: '../images/home_button_white.png'
+    property string exercise_button: '../images/exercise_button_white.png'
+    property string add_set_button: '../images/add_set_button_white.png'
 
     property int drawer_animation_duration: 1000
 
@@ -45,21 +46,10 @@ Rectangle {
             easing.type: Easing.InOutQuint
         }
 
-        Rectangle {
+        Custom_drawer_button {
             id: menu
-            implicitWidth: drawer.width
-            implicitHeight: drawer.height * 0.1
-            border.color: '#3aafa9'
-            border.width: 2
-            color: '#2b7a78'
 
-            Image {
-                width: menu.width
-                height: menu.height
-                fillMode: Image.PreserveAspectFit
-                mipmap: true
-                source: drawer.menu_button
-            }
+            image_source: '../' + drawer.menu_button
 
             MouseArea {
                 id: menu_area
@@ -67,11 +57,10 @@ Rectangle {
                 hoverEnabled: true
 
                 onEntered: {
-                    menu.color = '#00887a'
-
+                    menu.color = menu.on_hover_color
                 }
                 onExited: {
-                    menu.color = '#2b7a78'
+                    menu.color = menu.main_color
                 }
 
                 onClicked: {
@@ -91,21 +80,10 @@ Rectangle {
                 menu_area.enabled = true
             }
         }
-        Rectangle {
+        Custom_drawer_button {
             id: home_button
-            implicitWidth: drawer.width
-            implicitHeight: drawer.height * 0.1
-            border.color: '#3aafa9'
-            border.width: 2
-            color: '#2b7a78'
 
-            Image {
-                width: home_button.width
-                height: home_button.height
-                fillMode: Image.PreserveAspectFit
-                mipmap: true
-                source: drawer.home_button
-            }
+            image_source: '../' + drawer.home_button
 
             MouseArea {
                 id: home_button_area
@@ -113,31 +91,20 @@ Rectangle {
                 hoverEnabled: drawer.is_drawn
                 enabled: drawer.is_drawn
                 onEntered: {
-                    home_button.color = '#00887a'
+                    home_button.color = home_button.on_hover_color
                 }
                 onExited: {
-                    home_button.color = '#2b7a78'
+                    home_button.color = home_button.main_color
                 }
                 onClicked: {
                     stack.replace(main_flow_page)
                 }
             }
         }
-        Rectangle {
+        Custom_drawer_button {
             id: exercise_button
-            implicitWidth: drawer.width
-            implicitHeight: drawer.height * 0.1
-            border.color: '#3aafa9'
-            border.width: 2
-            color: '#2b7a78'
 
-            Image {
-                width: exercise_button.width
-                height: exercise_button.height
-                fillMode: Image.PreserveAspectFit
-                mipmap: true
-                source: drawer.exercise_button
-            }
+            image_source: '../' + drawer.exercise_button
 
             MouseArea {
                 id: exercise_button_area
@@ -145,10 +112,10 @@ Rectangle {
                 hoverEnabled: drawer.is_drawn
                 enabled: drawer.is_drawn
                 onEntered: {
-                    exercise_button.color = '#00887a'
+                    exercise_button.color = exercise_button.on_hover_color
                 }
                 onExited: {
-                    exercise_button.color = '#2b7a78'
+                    exercise_button.color = exercise_button.main_color
                 }
                 onClicked: {
                     stack.replace(learning_page)
@@ -156,22 +123,10 @@ Rectangle {
                 }
             }
         }
-        Rectangle {
+        Custom_drawer_button {
             id: add_set_button
-            implicitWidth: drawer.width
-            implicitHeight: drawer.height * 0.1
-            border.color: '#3aafa9'
-            border.width: 2
-            color: '#2b7a78'
 
-            Image {
-                width: parent.width * 0.8
-                height: parent.height * 0.8
-                anchors.centerIn: parent
-                fillMode: Image.PreserveAspectFit
-                mipmap: true
-                source: drawer.add_set_button
-            }
+            image_source: '../' + drawer.add_set_button
 
             MouseArea {
                 id: add_set_button_area
@@ -179,10 +134,10 @@ Rectangle {
                 hoverEnabled: drawer.is_drawn
                 enabled: drawer.is_drawn
                 onEntered: {
-                    add_set_button.color = '#00887a'
+                    add_set_button.color = add_set_button.on_hover_color
                 }
                 onExited: {
-                    add_set_button.color = '#2b7a78'
+                    add_set_button.color = add_set_button.main_color
                 }
                 onClicked: {
                     stack.replace(add_set_page)

@@ -3,6 +3,7 @@ from PySide6.QtCore import QObject, Signal
 from PySide6.QtQml import QQmlApplicationEngine
 import sys
 import os
+import textToSpeechPlayer
 
 from PySide6.QtWidgets import QApplication
 from gotrue import SignInWithPasswordlessCredentials
@@ -46,6 +47,7 @@ class SignalHandler(QObject):
 
 def handle_quit():
     supabase.auth.sign_out()
+    play_text.stop = True
     try:
         tracking_user_activity.TrackUserScreenTime.end_session()
     except AttributeError:
@@ -76,6 +78,9 @@ if __name__ == "__main__":
 
     set_op = set_operations.InsertSet()
     engine.rootContext().setContextProperty('set_op', set_op)
+
+    play_text = textToSpeechPlayer.TextToSpeech()
+    engine.rootContext().setContextProperty('text_to_speech', play_text)
 
     # handling window quiting
     signal_handler = SignalHandler()
