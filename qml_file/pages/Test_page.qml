@@ -126,8 +126,8 @@ Rectangle {
 
         Rectangle {
             id: rec_for_view
-            implicitWidth: test_page.width * 0.3
-            implicitHeight: test_page.height * 0.5
+            implicitWidth: test_page.width * 0.35
+            implicitHeight: test_page.height * 0.6
 
             color: 'transparent'
             radius: 10
@@ -178,17 +178,25 @@ Rectangle {
                                     antialiasing: true
                                     z: 2
 
+                                    border.width: 2
+                                    border.color: '#36454F'
+
                                     Rectangle {
                                         id: play_sound_button
-                                        implicitWidth: parent.height * 0.15
-                                        implicitHeight: parent.height * 0.15
+                                        implicitWidth: parent.height * 0.13
+                                        implicitHeight: parent.height * 0.13
                                         color: 'transparent'
                                         radius: play_sound_button.width / 2
                                         z: 3
 
+                                        anchors.top: parent.top
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 4
+                                        anchors.topMargin: 4
+
                                         Image {
                                             anchors.centerIn: parent
-                                            width: parent.width * 0.6
+                                            width: parent.width * 0.65
                                             height: parent.height
                                             fillMode: Image.PreserveAspectFit
                                             mipmap: true
@@ -234,28 +242,30 @@ Rectangle {
 
                                     Rectangle {
                                         width: parent.width
-                                        height: 1
+                                        height: 2
                                         color: '#36454F'
 
                                         anchors.top: question_flickable.top
+                                        anchors.bottomMargin: height
 
                                         antialiasing: true
                                     }
 
                                     Rectangle {
                                         width: parent.width
-                                        height: 1
+                                        height: 2
                                         color: '#36454F'
 
                                         anchors.bottom: question_flickable.bottom
+                                        anchors.topMargin: height
 
                                         antialiasing: true
                                     }
 
                                     Flickable {
                                         id: question_flickable
-                                        width: Math.min(question_holder.width * 0.8, question.contentWidth)
-                                        height: parent.height * 0.7
+                                        implicitWidth: Math.min(question_holder.width * 0.8, question.text.length * question.font.pixelSize / 2)
+                                        implicitHeight: parent.height * 0.7
 
                                         contentWidth: question_flickable.width
                                         contentHeight: Math.max(question.height, question_flickable.height)
@@ -269,8 +279,8 @@ Rectangle {
 
                                         Rectangle {
                                             id: question_text_holder
-                                            width: question_flickable.width
-                                            height: question.contentHeight
+                                            implicitWidth: question_flickable.width
+                                            implicitHeight: question.contentHeight
                                             anchors.centerIn: parent
                                             color: 'transparent'
 
@@ -299,30 +309,35 @@ Rectangle {
                                     antialiasing: true
                                     z: 2
 
+                                    border.width: 2
+                                    border.color: '#36454F'
+
                                     Rectangle {
                                         width: parent.width
-                                        height: 1
+                                        height: 2
                                         color: '#36454F'
 
                                         anchors.top: answer_flickable.top
+                                        anchors.bottomMargin: height
 
                                         antialiasing: true
                                     }
 
                                     Rectangle {
                                         width: parent.width
-                                        height: 1
+                                        height: 2
                                         color: '#36454F'
 
                                         anchors.bottom: answer_flickable.bottom
+                                        anchors.topMargin: height
 
                                         antialiasing: true
                                     }
 
                                     Flickable {
                                         id: answer_flickable
-                                        width: Math.min(answer_holder.width * 0.8, answer.contentWidth)
-                                        height: parent.height * 0.7
+                                        implicitWidth: Math.min(answer_holder.width * 0.8, answer.contentWidth)
+                                        implicitHeight: parent.height * 0.7
 
                                         contentWidth: answer_flickable.width
                                         contentHeight: Math.max(answer.height, answer_flickable.height)
@@ -400,7 +415,7 @@ Rectangle {
     RowLayout {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: parent.height * 0.15
+        anchors.bottomMargin: parent.height * 0.12
 
         Card_assessment_button {
             id: return_button
@@ -473,6 +488,7 @@ Rectangle {
             main_color: '#ef1910'
             on_hover_color: '#d50202'
             image_source: test_page.sad_face_button_png
+            border_color: '#FA5F55'
 
             Timer {
                 id: flip_timer2
@@ -541,6 +557,7 @@ Rectangle {
             main_color: '#f76f0b'
             on_hover_color: '#f95504'
             image_source: test_page.neutral_face_button_png
+            border_color: '#FFAA33'
 
             Timer {
                 id: flip_timer3
@@ -607,6 +624,7 @@ Rectangle {
             on_hover_color: '#107b18'
             main_color: '#1f930f'
             image_source: test_page.happy_face_button_png
+            border_color: '#50C878'
 
 
             Timer {

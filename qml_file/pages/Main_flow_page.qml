@@ -30,7 +30,6 @@ Rectangle{
         spacing: 20
 
         Text {
-            id: name
             text: "Your screen time past week"
             Layout.alignment: Qt.AlignHCenter
             color: '#1B1212'

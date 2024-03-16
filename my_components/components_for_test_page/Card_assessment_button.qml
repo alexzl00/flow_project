@@ -10,9 +10,13 @@ Rectangle {
     color: main_color
     radius: 10
 
+    border.width: 2.5
+    border.color: border_color
+
     property string main_color: ''
     property string on_hover_color: ''
     property string image_source: ''
+    property string border_color: ''
 
     Image {
         anchors.centerIn: parent
