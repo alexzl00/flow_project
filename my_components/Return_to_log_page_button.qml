@@ -19,9 +19,10 @@ Rectangle {
     property string return_button_png: '../images/return_button.png'
 
     Image {
+        id: return_image
         anchors.centerIn: parent
         width: parent.width * 0.6
-        height: parent.height
+        height: parent.width * 0.6
         fillMode: Image.PreserveAspectFit
         mipmap: true
         source: return_button_png

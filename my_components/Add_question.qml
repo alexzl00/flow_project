@@ -10,6 +10,10 @@ Rectangle {
 
     color: '#fdf7e4'
 
+    border.width: 3
+    border.color: '#36454F'
+
+
     function getQuestionText() {
         return question.text
     }
@@ -47,6 +51,11 @@ Rectangle {
 
         boundsBehavior: Flickable.StopAtBounds
 
+        FontLoader {
+            id: montserrat
+            source: '../fonts/Montserrat-Medium.ttf'
+        }
+
         TextEdit {
             id: question
             property string placeholderText: "Add an question"
@@ -57,6 +66,7 @@ Rectangle {
 
             property int maximumPossibleLength: 999
 
+            font.family: montserrat.font.family
 
             // length that can be saved in database
             property int maximumLength: 200
@@ -65,6 +75,7 @@ Rectangle {
                 text: question.placeholderText
                 color: 'gray'
                 font.pixelSize: 14
+                font.family: montserrat.font.family
                 font.bold: true
                 visible: !question.text
             }

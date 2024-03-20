@@ -23,6 +23,12 @@ Rectangle {
         id: return_button
     }
 
+    FontLoader {
+        id: montserrat
+        source: '../../fonts/Montserrat-Medium.ttf'
+    }
+
+
     ColumnLayout{
         id: layout
         anchors.centerIn: parent
@@ -40,9 +46,14 @@ Rectangle {
             text: "Create your account, please"
             Layout.alignment: Qt.AlignHCenter
             font {
-                family: 'Italic'
+                family: montserrat.font.family
                 pixelSize: 20
             }
+        }
+
+        Item {
+            height: 10
+            width: 1
         }
 
         Rectangle {
@@ -56,6 +67,7 @@ Rectangle {
                 id: new_email_field
                 font.bold: false
                 font.pointSize: 14
+                font.family: montserrat.font.family
                 width: parent.width
                 placeholderText: 'Set your email'
 
@@ -75,6 +87,7 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            font.family: montserrat.font.family
             color: '#d50202'
         }
 
@@ -88,6 +101,7 @@ Rectangle {
                 id: new_password_field
                 font.bold: false
                 font.pointSize: 14
+                font.family: montserrat.font.family
                 placeholderText: 'Set your password'
                 echoMode: TextInput.Password
                 width: parent.width
@@ -107,6 +121,7 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            font.family: montserrat.font.family
             color: '#d50202'
         }
 
@@ -140,11 +155,12 @@ Rectangle {
 
             contentItem: Text {
                 text: control2.checked ? 'Hide password' : 'See password'
-//                font: control.font
+
                 font {
-                    family: control2.font
+                    family: montserrat.font.family
                     bold: true
                 }
+
                 color: '#ffffff' /*'#0c0032'*/
                 verticalAlignment: Text.AlignVCenter
                 leftPadding: control2.indicator.width + control2.spacing
@@ -168,6 +184,7 @@ Rectangle {
             anchors.centerIn:  submit_button
             text: 'Create account'
             font.pixelSize: 18
+            font.family: montserrat.font.family
             color: '#F5F5DC'
         }
         MouseArea {

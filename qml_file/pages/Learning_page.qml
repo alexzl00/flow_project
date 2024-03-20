@@ -11,11 +11,22 @@ Rectangle {
     implicitHeight: parent
 
     property string test_button_png: "../../images/test_button.png"
-    property string trash_button_png: '../../images/trash_button.png'
-    property string alter_card_button_png: '../../images/alter_card_button.png'
+    property string trash_button_png: '../../images/delete_button.svg'
+    property string alter_card_button_png: '../../images/edit_button.svg'
+    property string backward_button_svg: '../../images/backward_button_black.svg'
+    property string forward_button_svg: '../../images/forward_button_black.svg'
     property int choose_test_rec_preferable_height: learning_page.height * 0.2
 
     property string chosen_set: ''
+
+    FontLoader {
+        id: openSansFont
+        source: '../../fonts/OpenSans-Italic-VariableFont_wdth,wght.ttf'
+    }
+    FontLoader {
+        id: montserrat
+        source: '../../fonts/Montserrat-Medium.ttf'
+    }
 
     gradient: Gradient{
         GradientStop{position: 0.0; color: '#5cdb95'}
@@ -42,7 +53,7 @@ Rectangle {
         text: "Currently you have no sets."
         Layout.alignment: Qt.AlignHCenter
         font {
-            family: 'Arial'
+            family: montserrat.font.family
             pixelSize: 48
         }
     }
@@ -50,9 +61,12 @@ Rectangle {
 
     Rectangle {
         id: list_view_holder
-        implicitWidth: learning_page.width * 0.55
+        implicitWidth: learning_page.width * 0.8
         implicitHeight: learning_page.height * 0.8
-        anchors.centerIn: parent
+
+        x: (learning_page.width - drawer.drawerWidthIfNotDrawn - width) / 2 + drawer.drawerWidthIfNotDrawn
+        anchors.verticalCenter: parent.verticalCenter
+
         //color: '#f9efc9'
         color: 'transparent'
         clip: true
@@ -61,13 +75,10 @@ Rectangle {
         property string children_on_hover_color: '#bde8aa'
 
 
-        //border.width: 3
-        //border.color: '#36454F'
-        //radius: 20
 
         ColumnLayout {
             anchors.centerIn: parent
-            spacing: 10
+            spacing: 30
 
             Text {
                 id: sets_text
@@ -76,57 +87,61 @@ Rectangle {
                 color: '#1B1212'
                 visible: sets_view.visible
                 font {
-                    family: 'Arial'
+                    family: montserrat.font.family
                     pixelSize: Math.min(window.width / 20, window.height / 20)
                 }
             }
 
-            ListView {
+            GridView {
                 id: sets_view
                 // anchors.left: parent.left
-                implicitWidth: list_view_holder.width * 0.85
-                implicitHeight: list_view_holder.height * 0.8
+                implicitWidth: list_view_holder.width
+                implicitHeight: grid_height
+
+                Layout.alignment: Qt.AlignHCenter
+
+                property var sets_view_model: MyModel {}
+
+
                 model: MyModel {}
-                spacing: 10
+
                 clip: true
+                focus: true
+                interactive: false
 
+                currentIndex: 0
 
-                Layout.fillHeight: true
-                Layout.fillWidth: true
+                property int currentPage: 1
 
-                boundsBehavior: Flickable.StopAtBounds
-
-
-                ScrollBar.vertical: ScrollBar {
-                    parent: sets_view.parent
-                    anchors.top: sets_view.top
-                    anchors.right: sets_view.right
-                    anchors.bottom: sets_view.bottom
-
-                    hoverEnabled: false
-
-                    policy: sets_view.visible ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
-
-                    orientation: Qt.Vertical
-                    interactive: false
-                    pressed: false
-
-                    minimumSize: 0.1
-                    contentItem: Rectangle {
-                        implicitWidth: 8
-                        radius: width / 2
-                        color: '#00A36C'
-                    }
-                    background: Rectangle {
-                        implicitWidth: 8
-                        color: list_view_holder.children_on_hover_color
-                    }
+                onCurrentPageChanged: {
+                    model.update(amount_of_rows * amount_of_columns * (currentPage - 1), (amount_of_rows * amount_of_columns * currentPage))
                 }
 
+                property int totalPages: Math.ceil(model.data_length() / itemsPerPage)
+                property int itemsPerPage: amount_of_rows * amount_of_columns
+
+                property bool if_last_page: currentPage === totalPages ? true : false
+                property int preferable_grid_height: list_view_holder.height * 0.8
+                property int last_page_grid_height: Math.ceil(sets_view.count / amount_of_columns) * cellHeight
+
+                cellWidth: sets_view.width / amount_of_columns
+                cellHeight: preferable_grid_height / amount_of_rows
+
+                //cellHeight: Math.max(learning_page.height * 0.1, list_view_item_text.contentHeight)
+
+                property int grid_height: if_last_page ? last_page_grid_height : preferable_grid_height
+
+                property int amount_of_rows: 4
+                property int amount_of_columns: 3
+
+
                 delegate: Item{
-                    implicitWidth: parent.width * 0.92
+                    implicitWidth: sets_view.cellWidth * 0.9
                     // it doesnt work parent.height, so learning_page.height (main rectangle's height) should be passed
-                    implicitHeight: Math.max(learning_page.height * 0.1, list_view_item_text.contentHeight)
+                    implicitHeight: sets_view.cellHeight * 0.9
+
+                    property int item_index: index
+
                     Rectangle{
                         id: list_view_item
                         radius: 20
@@ -134,8 +149,10 @@ Rectangle {
                         implicitHeight: parent.height
                         color: list_view_holder.children_main_color
 
+                        x: (sets_view.cellWidth - parent.width) / 2
+
                         border.width: 2
-                        border.color: '#36454F'
+                        border.color: 'black'
 
                         Text {
                             id: list_view_item_text
@@ -144,6 +161,9 @@ Rectangle {
                             width: parent.width * 0.8
                             wrapMode: Text.Wrap
                             font.pixelSize: Math.min(window.width / 40, window.height / 40)
+                            font.family: montserrat.font.family
+                            //font.weight: Font.DemiBold
+
                             //color: '#F5F5DC'
                         }
 
@@ -175,6 +195,13 @@ Rectangle {
 
                 }
             }
+
+            //space filler
+            Item {
+                visible: sets_view.if_last_page && (sets_view.preferable_grid_height != sets_view.height) ? true : false
+                height: sets_view.preferable_grid_height - sets_view.height - parent.spacing
+                width: 1
+            }
         }
 
         ColumnLayout {
@@ -183,12 +210,13 @@ Rectangle {
 
             Text {
                 id: cards_text
-                text: learning_page.chosen_set
+                text: `Chosen set: \n${learning_page.chosen_set}`
+                horizontalAlignment: Text.AlignHCenter
                 Layout.alignment: Qt.AlignHCenter
                 color: sets_text.color
                 visible: view_of_cards.visible
                 font {
-                    family: sets_text.font.family
+                    family: montserrat.font.family
                     pixelSize: sets_text.font.pixelSize
                 }
             }
@@ -236,35 +264,173 @@ Rectangle {
                 }
 
                 delegate: Item{
-                    implicitWidth: parent.width * 0.92
+                    implicitWidth: parent.width
                     id: card_container
                     property int index: DelegateModel.itemsIndex
 
                     // it doesnt work parent.height, so learning_page.height (main rectangle's height) should be passed
-                    implicitHeight: Math.min(learning_page.height * 0.1, 200)
+                    implicitHeight: Math.min(learning_page.height * 0.15, 200)
+
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        //anchors.verticalCenter: parent.verticalCenter
+                        anchors.rightMargin: cards_view_item.border.width
+
+                        Rectangle {
+                            id: alter_card_button_container
+                            implicitWidth: card_container.height - cards_view_item.height
+                            implicitHeight: card_container.height - cards_view_item.height
+                            radius: cards_view_item.height / 2
+                            color: 'transparent'
+
+                            anchors.rightMargin: 10
+
+                            Image {
+                                id: alter_card_button
+                                anchors.centerIn: parent
+
+                                width: parent.width * 0.7
+                                height: parent.height * 0.7
+                                fillMode: Image.PreserveAspectFit
+                                mipmap: true
+                                source: alter_card_button_png
+
+                            }
+                            MouseArea {
+                                id: alter_area
+                                anchors.fill: parent
+                                hoverEnabled: true
+
+                                onEntered: {
+                                    alter_card_button.height = alter_card_button_container.height * 0.9
+                                    alter_card_button.width = alter_card_button_container.height * 0.9
+                                }
+                                onExited: {
+                                    alter_card_button.height = alter_card_button_container.height * 0.7
+                                    alter_card_button.width = alter_card_button_container.height * 0.7
+                                }
+                                onClicked: {
+                                    alter_card.visible = true
+                                    view_of_cards.visible = false
+                                    alter_card.chosen_card_index = card_container.index
+                                    container.setTextToQuestion(view_of_cards.model.question([learning_page.chosen_set, card_container.index]))
+                                    container2.setTextToAnswer(view_of_cards.model.answer([learning_page.chosen_set, card_container.index]))
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            id: trash_button_container
+                            implicitWidth: card_container.height - cards_view_item.height
+                            implicitHeight: card_container.height - cards_view_item.height
+                            radius: cards_view_item.height / 2
+                            color: 'transparent'
+
+                            anchors.rightMargin: 10
+
+                            Image {
+                                id: trash_button
+                                anchors.centerIn: parent
+
+                                width: parent.width * 0.8
+                                height: parent.height * 0.8
+                                fillMode: Image.PreserveAspectFit
+                                mipmap: true
+                                source: trash_button_png
+
+                            }
+                            MouseArea {
+                                id: delete_area
+                                anchors.fill: parent
+                                hoverEnabled: true
+
+                                onEntered: {
+                                    trash_button.height = trash_button_container.height * 0.9
+                                    trash_button.width = trash_button_container.height * 0.9
+                                }
+                                onExited: {
+                                    trash_button.height = trash_button_container.height * 0.7
+                                    trash_button.width = trash_button_container.height * 0.7
+                                }
+                                onClicked: {
+
+                                    if (view_of_cards.model.delete_card([learning_page.chosen_set, card_container.index]) === true){
+                                        view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
+                                    }
+                                    else {
+                                        sets_view.totalPages = Math.ceil(sets_view.model.data_length() / sets_view.itemsPerPage)
+                                        if (sets_view.totalPages < sets_view.currentPage) {
+                                            sets_view.currentPage = sets_view.totalPages
+                                        }
+                                        sets_view.model.update(sets_view.amount_of_rows * sets_view.amount_of_columns * (sets_view.currentPage - 1), (sets_view.amount_of_rows * sets_view.amount_of_columns * sets_view.currentPage))
+                                        view_of_cards.visible = false
+                                        sets_view.visible = true
+                                    }
+
+                                }
+                            }
+
+                        }
+                    }
 
                     Rectangle{
                         id: cards_view_item
                         radius: 20
                         implicitWidth: parent.width
-                        implicitHeight: parent.height
+                        implicitHeight: parent.height * 0.7
                         color: list_view_holder.children_main_color
+
+                        anchors.bottom: parent.bottom
 
                         border.width: 2
                         border.color: '#36454F'
 
+                        Rectangle {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            width: 2
+
+                            color: parent.border.color
+                        }
+
+                        Text {
+                            text: 'Question'
+                            font.pixelSize: 16
+                            font.family: montserrat.font.family
+                            font.bold: true
+
+                            anchors.top: parent.top
+                            anchors.topMargin: 1
+
+                            x: cards_view_item.width / 4 - contentWidth / 2
+                        }
+
+                        Text {
+                            text: 'Answer'
+                            font.pixelSize: 16
+                            font.family: montserrat.font.family
+                            font.bold: true
+
+                            anchors.top: parent.top
+                            anchors.topMargin: 1
+
+                            x: cards_view_item.width / 4 * 3 - contentWidth / 2
+                        }
+
                         Flickable {
-                            id: card_flickable
-                            width: parent.width * 0.6
-                            height: parent.height * 0.78
+                            id: question_flickable
+                            width: parent.width / 2.5
+                            height: parent.height * 0.49
 
-                            contentWidth: cards_view_item_text.width
-                            contentHeight: cards_view_item_text.height
+                            contentWidth: question_text.width
+                            contentHeight: question_text.height / 2 * 3
 
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            anchors.leftMargin: 12
+                            x: cards_view_item.width / 4 - width / 2
+                            anchors.topMargin: cards_view_item.height / 3
+                            anchors.top: parent.top
 
                             clip: true
 
@@ -272,111 +438,149 @@ Rectangle {
                             boundsBehavior: Flickable.StopAtBounds
 
                             Text {
-                                id: cards_view_item_text
-                                width: card_flickable.width
+                                id: question_text
+                                width: question_flickable.width
 
-                                text: display
+                                text: view_of_cards.model.question([learning_page.chosen_set, card_container.index])
                                 wrapMode: Text.Wrap
                                 font.pixelSize: Math.min(window.width / 50, window.height / 50)
+                                font.family: montserrat.font.family
                             }
                         }
 
-                        Row {
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.rightMargin: cards_view_item.border.width
+                        Flickable {
+                            id: answer_flickable
+                            width: parent.width / 2.5
+                            height: parent.height * 0.49
 
-                            Rectangle {
-                                id: alter_card_button_container
-                                implicitWidth: cards_view_item.height * 0.65
-                                implicitHeight: cards_view_item.height * 0.65
-                                radius: cards_view_item.height / 2
-                                color: 'transparent'
+                            contentWidth: answer_text.width
+                            contentHeight: answer_text.height / 2 * 3
 
-                                anchors.rightMargin: 10
+                            x: cards_view_item.width / 4 * 3 - width / 2
+                            anchors.topMargin: cards_view_item.height / 3
+                            anchors.top: parent.top
 
-                                Image {
-                                    id: alter_card_button
-                                    anchors.centerIn: parent
+                            clip: true
 
-                                    width: parent.width * 0.7
-                                    height: parent.height * 0.7
-                                    fillMode: Image.PreserveAspectFit
-                                    mipmap: true
-                                    source: alter_card_button_png
+                            boundsBehavior: Flickable.StopAtBounds
 
-                                }
-                                MouseArea {
-                                    id: alter_area
-                                    anchors.fill: parent
-                                    hoverEnabled: true
+                            Text {
+                                id: answer_text
+                                width: answer_flickable.width
 
-                                    onEntered: {
-                                        alter_card_button_container.color = list_view_holder.children_on_hover_color
-                                    }
-                                    onExited: {
-                                        alter_card_button_container.color = list_view_holder.children_main_color
-                                    }
-                                    onClicked: {
-                                        alter_card.visible = true
-                                        view_of_cards.visible = false
-                                        alter_card.chosen_card_index = card_container.index
-                                        container.setTextToQuestion(view_of_cards.model.question([learning_page.chosen_set, card_container.index]))
-                                        container2.setTextToAnswer(view_of_cards.model.answer([learning_page.chosen_set, card_container.index]))
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                id: trash_button_container
-                                implicitWidth: cards_view_item.height * 0.65
-                                implicitHeight: cards_view_item.height * 0.65
-                                radius: cards_view_item.height / 2
-                                color: 'transparent'
-
-                                anchors.rightMargin: 10
-
-                                Image {
-                                    id: trash_button
-                                    anchors.centerIn: parent
-
-                                    width: parent.width * 0.8
-                                    height: parent.height * 0.8
-                                    fillMode: Image.PreserveAspectFit
-                                    mipmap: true
-                                    source: trash_button_png
-
-                                }
-                                MouseArea {
-                                    id: delete_area
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-
-                                    onEntered: {
-                                        trash_button_container.color = list_view_holder.children_on_hover_color
-                                    }
-                                    onExited: {
-                                        trash_button_container.color = 'transparent'
-                                    }
-                                    onClicked: {
-
-                                        if (view_of_cards.model.delete_card([learning_page.chosen_set, card_container.index]) === true){
-                                            view_of_cards.model.wordlist_of_set(learning_page.chosen_set)
-                                        }
-                                        else {
-                                            sets_view.model.update()
-                                            view_of_cards.visible = false
-                                            sets_view.visible = true
-                                        }
-
-                                    }
-                                }
-
+                                text: view_of_cards.model.answer([learning_page.chosen_set, card_container.index])
+                                wrapMode: Text.Wrap
+                                font.pixelSize: Math.min(window.width / 50, window.height / 50)
+                                font.family: montserrat.font.family
                             }
                         }
                     }
                 }
             }
+        }
+    }
+    RowLayout {
+        anchors.bottomMargin: 10
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: list_view_holder.horizontalCenter
+        visible: sets_view.visible
+        spacing: 20
+
+        Rectangle {
+            id: backward
+            implicitWidth: learning_page.width * 0.07
+            implicitHeight: learning_page.height * 0.07
+            radius: 8
+            color: main_color
+            border.width: 2.5
+
+            property string main_color: '#cdeac2'
+            property string on_hover_color: '#bde8aa'
+
+            Image {
+                id: backward_image
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+
+                width: parent.width * 0.8
+                height: parent.height * 0.8
+                fillMode: Image.PreserveAspectFit
+                mipmap: true
+                source: learning_page.backward_button_svg
+
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onEntered: {
+                    backward.color = backward.on_hover_color
+                }
+                onExited: {
+                    backward.color = backward.main_color
+                }
+                onClicked: {
+                    if (sets_view.currentPage > 1) {
+                        sets_view.currentPage = sets_view.currentPage - 1
+                    }
+                }
+            }
+
+        }
+
+        Text {
+            text: `${sets_view.currentPage} / ${sets_view.totalPages}`
+            color: 'black'
+            font {
+                family: learning_page.openSansFont.name
+                pixelSize: backward.height / 2
+            }
+        }
+
+        Rectangle {
+            id: forward
+            implicitWidth: backward.width
+            implicitHeight: backward.height
+            radius: backward.radius
+            color: main_color
+            border.width: backward.border.width
+
+            property string main_color: backward.main_color
+            property string on_hover_color: backward.on_hover_color
+
+            Image {
+                id: forward_image
+
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                //anchors.rightMargin: (parent.width - width) / 2
+
+                width: parent.width * 0.8
+                height: parent.height * 0.8
+                fillMode: Image.PreserveAspectFit
+                mipmap: true
+                source: learning_page.forward_button_svg
+
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onEntered: {
+                    forward.color = forward.on_hover_color
+                }
+                onExited: {
+                    forward.color = forward.main_color
+                }
+                onClicked: {
+                    if (sets_view.currentPage < sets_view.totalPages) {
+                        sets_view.currentPage = sets_view.currentPage + 1
+                    }
+                }
+            }
+
         }
     }
 
@@ -386,7 +590,7 @@ Rectangle {
         implicitHeight: view_of_cards.height
         anchors.centerIn: parent
         // color: 'transparent'
-        color: '#f9efc9'
+        color: list_view_holder.children_on_hover_color
         border.color: '#36454F'
         border.width: 2
         radius: 20
@@ -506,6 +710,9 @@ Rectangle {
             visible: view_of_cards.visible
             color: '#fdf7e4'
             radius: 10
+
+            border.width: 2
+
             Text {
                 id: learn_card_button_text
                 anchors.centerIn: parent
@@ -624,5 +831,5 @@ Rectangle {
         }
     }
 
-    Component.onCompleted: sets_view.model.update()
+    Component.onCompleted: sets_view.model.update(0, sets_view.itemsPerPage)
 }

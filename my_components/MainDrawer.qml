@@ -21,10 +21,10 @@ Rectangle {
     }
 
     // button sources
-    property string menu_button: '../images/menu_button_white.png'
-    property string home_button: '../images/home_button_white.png'
-    property string exercise_button: '../images/exercise_button_white.png'
-    property string add_set_button: '../images/add_set_button_white.png'
+    property string menu_button: '../images/menu_button.svg'
+    property string home_button: '../images/home_button.svg'
+    property string exercise_button: '../images/exercise_button.svg'
+    property string add_set_button: '../images/add_set_button.svg'
 
     property int drawer_animation_duration: 1000
 
@@ -34,7 +34,7 @@ Rectangle {
 
     ColumnLayout{
         id: drawer_layout
-        spacing: 0
+        spacing: -menu.border.width
         Layout.alignment: Qt.AlignLeft && Qt.AlignTop
 
         PropertyAnimation {

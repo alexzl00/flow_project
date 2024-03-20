@@ -21,6 +21,11 @@ Rectangle{
         id: titleBar
     }
 
+    FontLoader {
+        id: montserrat
+        source: '../../fonts/Montserrat-Medium.ttf'
+    }
+
     Rectangle {
         id: content
         implicitHeight: parent.height - 35
@@ -33,6 +38,7 @@ Rectangle{
         ColumnLayout {
             spacing: window.height * 0.03
             anchors.centerIn: parent
+
             Text {
                 id: name
                 text: "Flow"
@@ -42,13 +48,17 @@ Rectangle{
                     pixelSize: Math.min(window.width / 8.8, window.height / 8.8)
                 }
             }
+
             ColumnLayout {
+                spacing: 20
                 TextField {
                     id: add_set_name
                     font.bold: false
                     font.pointSize: Math.min(window.width / 50, window.height / 50)
+                    font.family: montserrat.font.family
                     placeholderText: 'Add a name of your set'
                     maximumLength: 25
+
 
                     verticalAlignment: TextInput.AlignVCenter
 
@@ -57,6 +67,8 @@ Rectangle{
                         implicitWidth: window.width * 0.30
                         implicitHeight: window.height * 0.07
                         color: '#fdf7e4'
+                        border.width: 3
+                        border.color: '#36454F'
                     }
 
                     Count_letters {
@@ -91,11 +103,16 @@ Rectangle{
                 implicitWidth: button_text.contentWidth + 20
                 color: '#fdf7e4'
                 radius: 5
+
+                border.width: 3
+                border.color: '#36454F'
+
                 Text {
                     id: button_text
                     anchors.centerIn: submit_add_card_button
                     text: 'Add card'
                     font.pixelSize: Math.min(window.width / 50, window.height / 50)
+                    font.family: montserrat.font.family
                 }
                 MouseArea {
                     anchors.fill:  submit_add_card_button

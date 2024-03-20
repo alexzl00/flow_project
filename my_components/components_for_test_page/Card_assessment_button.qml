@@ -21,7 +21,7 @@ Rectangle {
     Image {
         anchors.centerIn: parent
         width: parent.width
-        height: parent.height * 0.7
+        height: parent.height * 0.5
         fillMode: Image.PreserveAspectFit
         mipmap: true
         source: image_source

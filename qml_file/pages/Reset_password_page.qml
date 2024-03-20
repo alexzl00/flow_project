@@ -22,6 +22,11 @@ Rectangle {
         id: return_button
     }
 
+    FontLoader {
+        id: montserrat
+        source: '../../fonts/Montserrat-Medium.ttf'
+    }
+
     property string email: ''
 
     ColumnLayout {
@@ -41,13 +46,16 @@ Rectangle {
         Rectangle {
             id: email_field_holder
             width: 260
-            height: email_field.height
+            height: email_field.height + 10
             radius: 10
+
+            color: email_field.enabled ? '#ffffff' : '#C0C0C0'
 
             TextField {
                 id: email_field
                 font.bold: false
                 font.pointSize: 14
+                font.family: montserrat.font.family
                 placeholderText: 'Enter your email'
                 width: parent.width
                 height: email_field.contentHeight + 10
@@ -59,7 +67,7 @@ Rectangle {
                 background: Rectangle{
                     radius: email_field_holder.radius
                     width: email_field_holder.width
-                    color: enabled ? '#ffffff' : '#C0C0C0'
+                    color: 'transparent'
                 }
             }
         }
@@ -69,6 +77,7 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            font.family: montserrat.font.family
             color: '#d50202'
         }
 
@@ -77,11 +86,13 @@ Rectangle {
             width: email_field_holder.width
             height: email_field_holder.height
             radius: 10
+            color: confirm_token_field.enabled ? '#ffffff' : '#C0C0C0'
 
             TextField {
                 id: confirm_token_field
                 font.bold: false
                 font.pointSize: 14
+                font.family: montserrat.font.family
                 placeholderText: 'Enter sent code'
                 width: parent.width
                 height: email_field.contentHeight + 10
@@ -92,8 +103,7 @@ Rectangle {
                 background: Rectangle{
                     radius: confirm_token.radius
                     width: confirm_token.width
-                    color: enabled ? '#ffffff' : '#C0C0C0'
-
+                    color: 'transparent'
                 }
             }
         }
@@ -103,6 +113,7 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            font.family: montserrat.font.family
             color: '#d50202'
         }
 
@@ -111,11 +122,13 @@ Rectangle {
             width: email_field_holder.width
             height: email_field_holder.height
             radius: 10
+            color: reset_password_field.enabled ? '#ffffff' : '#C0C0C0'
 
             TextField {
                 id: reset_password_field
                 font.bold: false
                 font.pointSize: 14
+                font.family: montserrat.font.family
                 placeholderText: 'Enter new password'
                 width: parent.width
                 height: email_field.contentHeight + 10
@@ -127,7 +140,7 @@ Rectangle {
                 background: Rectangle{
                     radius: reset_password.radius
                     width: reset_password.width
-                    color: enabled ? '#ffffff' : '#C0C0C0'
+                    color: 'transparent'
                 }
             }
         }
@@ -136,6 +149,7 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            font.family: montserrat.font.family
             color: '#d50202'
         }
 
@@ -155,6 +169,7 @@ Rectangle {
                 anchors.centerIn:  submit_button
                 text: 'Send code'
                 font.pixelSize: 16
+                font.family: montserrat.font.family
                 color: '#F5F5DC'
             }
             MouseArea {

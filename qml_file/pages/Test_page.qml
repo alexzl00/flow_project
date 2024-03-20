@@ -22,9 +22,9 @@ Rectangle {
 
     property string volume_button_png: '../../images/volume_button.png'
 
-    property string sad_face_button_png: '../../images/sad_button.png' // for bad_button
-    property string neutral_face_button_png: '../../images/neutral_button.png' // for good_button
-    property string happy_face_button_png: '../../images/happy_button.png' // for excellent_button
+    property string sad_face_button_png: '../../images/cross_button_white.svg' // for bad_button
+    property string neutral_face_button_png: '../../images/circle_button_white.svg' // for good_button
+    property string happy_face_button_png: '../../images/check_mark_white.svg' // for excellent_button
     property string return_button_png: '../../images/return_button.png' // for return_button
 
 
@@ -36,6 +36,31 @@ Rectangle {
         id: drawer
     }
 
+    FontLoader {
+        id: montserrat
+        source: '../../fonts/Montserrat-Medium.ttf'
+    }
+
+    Rectangle {
+        id: show_percentage_of_indicator
+        visible: false
+
+        implicitWidth: custom_result_indicator_rec.width * 0.2
+        implicitHeight: custom_result_indicator_rec.height * 5
+
+        radius: 10
+        color: '#cdeac2'
+        border.width: 1.5
+
+
+        Text {
+            id: show_percentage_of_indicator_text
+            anchors.centerIn: parent
+            text: ''
+            font.family: test_page.montserrat
+            font.pixelSize: Math.min(window.width / 50, window.height / 50)
+        }
+    }
 
     ColumnLayout {
         anchors.centerIn: parent
@@ -48,7 +73,7 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
             color: 'transparent'
             radius: 10
-            clip: true
+            //clip: true
 
             property int number_of_cards: view_of_cards.count
 
@@ -75,6 +100,24 @@ Rectangle {
                     blRadius: advancedShapeGreen.height / 2
 
                     fill_color: colorModel.get(0).green
+
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onEntered: {
+                            var global_position = advancedShapeGreen.mapToItem(test_page, advancedShapeGreen)
+                            show_percentage_of_indicator.x = global_position.x + advancedShapeGreen.width / 2  - show_percentage_of_indicator.width / 2
+                            show_percentage_of_indicator.y = global_position.y - show_percentage_of_indicator.height - 5
+                            show_percentage_of_indicator.visible = true
+                            show_percentage_of_indicator_text.text = `${Math.ceil(custom_result_indicator_rec.list_of_green.length / custom_result_indicator_rec.number_of_cards * 100)}%`
+                        }
+
+                        onExited: {
+                            show_percentage_of_indicator.visible = false
+                        }
+                    }
                 }
 
                 Result_indicator_shape {
@@ -88,6 +131,23 @@ Rectangle {
                     blRadius: advancedShapeGreen.width === 0 ? advancedShapeOrange.height / 2 : 0
 
                     fill_color: colorModel.get(1).orange
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onEntered: {
+                            var global_position = advancedShapeOrange.mapToItem(test_page, advancedShapeOrange)
+                            show_percentage_of_indicator.x = global_position.x + advancedShapeOrange.width / 2  - show_percentage_of_indicator.width / 2 - advancedShapeGreen.width
+                            show_percentage_of_indicator.y = global_position.y - show_percentage_of_indicator.height - 5
+                            show_percentage_of_indicator.visible = true
+                            show_percentage_of_indicator_text.text = `${Math.ceil(custom_result_indicator_rec.list_of_orange.length / custom_result_indicator_rec.number_of_cards * 100)}%`
+                        }
+
+                        onExited: {
+                            show_percentage_of_indicator.visible = false
+                        }
+                    }
                 }
 
                 Result_indicator_shape {
@@ -101,6 +161,23 @@ Rectangle {
                     blRadius: (advancedShapeGreen.width === 0 && advancedShapeOrange.width === 0) ? advancedShapeRed.height / 2 : 0
 
                     fill_color: colorModel.get(2).red
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onEntered: {
+                            var global_position = advancedShapeRed.mapToItem(test_page, advancedShapeRed)
+                            show_percentage_of_indicator.x = global_position.x + advancedShapeRed.width / 2  - show_percentage_of_indicator.width / 2 - advancedShapeGreen.width - advancedShapeOrange.width
+                            show_percentage_of_indicator.y = global_position.y - show_percentage_of_indicator.height - 5
+                            show_percentage_of_indicator.visible = true
+                            show_percentage_of_indicator_text.text = `${Math.ceil(custom_result_indicator_rec.list_of_red.length / custom_result_indicator_rec.number_of_cards * 100)}%`
+                        }
+
+                        onExited: {
+                            show_percentage_of_indicator.visible = false
+                        }
+                    }
                 }
 
                 Result_indicator_shape {
@@ -119,6 +196,23 @@ Rectangle {
                     blRadius: (advancedShapeGreen.width === 0 && advancedShapeOrange.width === 0 && advancedShapeRed.width === 0) ? advancedShapeGrey.height / 2 : 0
 
                     fill_color: '#C0C0C0' // grey
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onEntered: {
+                            var global_position = mapToItem(test_page, advancedShapeGrey)
+                            show_percentage_of_indicator.x = global_position.x + advancedShapeGrey.width / 2  - show_percentage_of_indicator.width / 2 - advancedShapeGreen.width - advancedShapeOrange.width - advancedShapeRed.width
+                            show_percentage_of_indicator.y = global_position.y - show_percentage_of_indicator.height - 5
+                            show_percentage_of_indicator.visible = true
+                            show_percentage_of_indicator_text.text = `${Math.ceil(advancedShapeGrey.grey_length / custom_result_indicator_rec.number_of_cards * 100)}%`
+                        }
+
+                        onExited: {
+                            show_percentage_of_indicator.visible = false
+                        }
+                    }
                 }
 
             }
@@ -126,7 +220,7 @@ Rectangle {
 
         Rectangle {
             id: rec_for_view
-            implicitWidth: test_page.width * 0.35
+            implicitWidth: test_page.width * 0.38
             implicitHeight: test_page.height * 0.6
 
             color: 'transparent'
@@ -179,7 +273,7 @@ Rectangle {
                                     z: 2
 
                                     border.width: 2
-                                    border.color: '#36454F'
+                                    border.color: 'black'
 
                                     Rectangle {
                                         id: play_sound_button
@@ -243,7 +337,7 @@ Rectangle {
                                     Rectangle {
                                         width: parent.width
                                         height: 2
-                                        color: '#36454F'
+                                        color: 'black'
 
                                         anchors.top: question_flickable.top
                                         anchors.bottomMargin: height
@@ -254,7 +348,7 @@ Rectangle {
                                     Rectangle {
                                         width: parent.width
                                         height: 2
-                                        color: '#36454F'
+                                        color: 'black'
 
                                         anchors.bottom: question_flickable.bottom
                                         anchors.topMargin: height
@@ -292,7 +386,9 @@ Rectangle {
                                                 text: model.question
                                                 width: question_text_holder.width
                                                 wrapMode: Text.Wrap
-                                                font.pixelSize: Math.min(window.width / 50, window.height / 50)
+
+                                                font.pixelSize: Math.min(window.width / 40, window.height / 40)
+                                                font.family: montserrat.font.family
                                             }
                                         }
                                     }
@@ -310,12 +406,12 @@ Rectangle {
                                     z: 2
 
                                     border.width: 2
-                                    border.color: '#36454F'
+                                    border.color: 'black'
 
                                     Rectangle {
                                         width: parent.width
                                         height: 2
-                                        color: '#36454F'
+                                        color: 'black'
 
                                         anchors.top: answer_flickable.top
                                         anchors.bottomMargin: height
@@ -326,7 +422,7 @@ Rectangle {
                                     Rectangle {
                                         width: parent.width
                                         height: 2
-                                        color: '#36454F'
+                                        color: 'black'
 
                                         anchors.bottom: answer_flickable.bottom
                                         anchors.topMargin: height
@@ -364,7 +460,9 @@ Rectangle {
                                                 text: model.answer
                                                 width: answer_text_holder.width
                                                 wrapMode: Text.Wrap
-                                                font.pixelSize: Math.min(window.width / 50, window.height / 50)
+
+                                                font.pixelSize: Math.min(window.width / 40, window.height / 40)
+                                                font.family: montserrat.font.family
                                             }
                                         }
                                     }
@@ -416,6 +514,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: parent.height * 0.12
+        spacing: 20
 
         Card_assessment_button {
             id: return_button
@@ -429,15 +528,6 @@ Rectangle {
             main_color: '#cdeac2'
             on_hover_color: '#bde8aa'
             image_source: test_page.return_button_png
-
-            Image {
-                anchors.centerIn: parent
-                width: parent.width
-                height: parent.height * 0.7
-                fillMode: Image.PreserveAspectFit
-                mipmap: true
-                source: test_page.return_button_png
-            }
 
             Timer {
                 id: flip_timer1

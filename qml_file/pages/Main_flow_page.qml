@@ -24,6 +24,11 @@ Rectangle{
         z: 1
     }
 
+    FontLoader {
+        id: montserrat
+        source: '../../fonts/Montserrat-Medium.ttf'
+    }
+
     ColumnLayout {
         x: (main_flow_page.width - drawer.drawerWidthIfNotDrawn - width) / 2 + drawer.drawerWidthIfNotDrawn
         anchors.verticalCenter: parent.verticalCenter
@@ -34,7 +39,7 @@ Rectangle{
             Layout.alignment: Qt.AlignHCenter
             color: '#1B1212'
             font {
-                family: 'Arial'
+                family: montserrat.font.family
                 pixelSize: Math.min(window.width / 25, window.height / 25)
             }
         }

@@ -19,6 +19,11 @@ Rectangle {
         minimizeRestoreButtonVisible: false
     }
 
+    FontLoader {
+        id: montserrat
+        source: '../../fonts/Montserrat-Medium.ttf'
+    }
+
     ColumnLayout{
         id: main_layout
         anchors.centerIn: parent
@@ -43,6 +48,7 @@ Rectangle {
                 id: email_field
                 font.bold: false
                 font.pointSize: 14
+                font.family: montserrat.font.family
                 placeholderText: 'Enter your email'
                 width: parent.width
 
@@ -61,6 +67,7 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            font.family: montserrat.font.family
             color: '#d50202'
         }
         Rectangle {
@@ -73,6 +80,7 @@ Rectangle {
                 id: password_field
                 font.bold: false
                 font.pointSize: 14
+                font.family: montserrat.font.family
                 placeholderText: 'Enter your password'
                 echoMode: TextInput.Password
                 width: parent.width
@@ -93,6 +101,7 @@ Rectangle {
             text: ''
             font.bold: true
             font.pixelSize: 16
+            font.family: montserrat.font.family
             color: '#d50202'
         }
 
@@ -126,9 +135,8 @@ Rectangle {
 
             contentItem: Text {
                 text: control.checked ? 'Hide password' : 'See password'
-//                font: control.font
                 font {
-                    family: control.font
+                    family: montserrat.font.family
                     bold: true
                 }
                 color: '#ffffff' /*'#0c0032'*/
@@ -146,6 +154,7 @@ Rectangle {
                 text: 'Create account?'
                 color: 'black'
                 font.underline: false
+                font.family: montserrat.font.family
 
                 MouseArea{
                     width: create_account.width + 10
@@ -170,6 +179,7 @@ Rectangle {
                 text: 'Forgot password?'
                 color: 'black'
                 font.underline: false
+                font.family: montserrat.font.family
 
                 MouseArea{
                     width: forgot_password.width + 10
@@ -213,6 +223,7 @@ Rectangle {
                 anchors.centerIn:  submit_button
                 text: 'Log in'
                 font.pixelSize: 18
+                font.family: montserrat.font.family
                 color: '#F5F5DC'
             }
             MouseArea {

@@ -38,13 +38,21 @@ class MyModel(QAbstractListModel):
             data = self._data[index.row()]
             return data
 
+    @Slot(result=int)
+    def data_length(self):
+        return len(list(user_basic_info.UserData.user_sets.keys()))
+
     # for sets_view
-    @Slot(result=bool)
-    def update(self, parent=QModelIndex()):
-        new_data = list(user_basic_info.UserData.user_sets.keys())[::-1]
+    @Slot(int, int, result=bool)
+    def update(self, start_index, end_index, parent=QModelIndex()):
+        new_data = list(user_basic_info.UserData.user_sets.keys())[start_index: end_index]
+        new_data.reverse()
+
         position = self.rowCount()
 
-        self.beginRemoveRows(parent, 0, position)
+        self.beginRemoveRows(parent, 0, position - 1)
+        for i in range(0, position - 1):
+            self._data = []
         self.endRemoveRows()
 
         new_position = 0
@@ -115,6 +123,7 @@ class MyModel(QAbstractListModel):
     def answer(self, t: list):
         set_name: str = t[0]
         card_index: int = int(t[1])
+        print(set_name, card_index)
 
         return user_basic_info.UserData.user_sets[set_name][card_index]['answer']
 
