@@ -11,8 +11,8 @@ Rectangle {
     implicitHeight: parent
 
     property string test_button_png: "../../images/test_button.png"
-    property string trash_button_png: '../../images/delete_button.svg'
-    property string alter_card_button_png: '../../images/edit_button.svg'
+    property string trash_button_png: '../../images/delete_button_red.svg'
+    property string alter_card_button_png: '../../images/edit_button_blue.svg'
     property string backward_button_svg: '../../images/backward_button_black.svg'
     property string forward_button_svg: '../../images/forward_button_black.svg'
     property int choose_test_rec_preferable_height: learning_page.height * 0.2
@@ -99,9 +99,6 @@ Rectangle {
                 implicitHeight: grid_height
 
                 Layout.alignment: Qt.AlignHCenter
-
-                property var sets_view_model: MyModel {}
-
 
                 model: MyModel {}
 

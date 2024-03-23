@@ -6,9 +6,18 @@ import 'drawer_button_component'
 Rectangle {
     id: drawer
     anchors.bottom: parent.bottom
-    width: window.width * 0.1
+    width: drawerWidthIfNotDrawn
     height: window.height - 35
     color: '#5cdb95'
+
+    Rectangle {
+        width: 2
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+
+        color: '#36454F'
+    }
 
     // properties
     property bool is_drawn: drawer.width === drawerWidthIfDrawn ? true : false

@@ -358,11 +358,11 @@ Rectangle {
 
                                     Flickable {
                                         id: question_flickable
-                                        implicitWidth: Math.min(question_holder.width * 0.8, question.text.length * question.font.pixelSize / 2)
+                                        implicitWidth: Math.min(question_holder.width * 0.8, question.text.length * question.font.pixelSize / 2 + 30)
                                         implicitHeight: parent.height * 0.7
 
-                                        contentWidth: question_flickable.width
-                                        contentHeight: Math.max(question.height, question_flickable.height)
+                                        contentWidth: width
+                                        contentHeight: Math.max(question.height, height)
 
                                         anchors.centerIn: parent
 
@@ -384,7 +384,7 @@ Rectangle {
                                                 anchors.centerIn: question_text_holder
 
                                                 text: model.question
-                                                width: question_text_holder.width
+                                                width: question_flickable.width
                                                 wrapMode: Text.Wrap
 
                                                 font.pixelSize: Math.min(window.width / 40, window.height / 40)
@@ -432,11 +432,11 @@ Rectangle {
 
                                     Flickable {
                                         id: answer_flickable
-                                        implicitWidth: Math.min(answer_holder.width * 0.8, answer.contentWidth)
+                                        implicitWidth: Math.min(answer_holder.width * 0.8, answer.text.length * answer.font.pixelSize / 2 + 30)
                                         implicitHeight: parent.height * 0.7
 
-                                        contentWidth: answer_flickable.width
-                                        contentHeight: Math.max(answer.height, answer_flickable.height)
+                                        contentWidth: width
+                                        contentHeight: Math.max(answer.height, height)
 
                                         anchors.centerIn: parent
 
@@ -458,7 +458,7 @@ Rectangle {
                                                 anchors.centerIn: answer_text_holder
 
                                                 text: model.answer
-                                                width: answer_text_holder.width
+                                                width: answer_flickable.width
                                                 wrapMode: Text.Wrap
 
                                                 font.pixelSize: Math.min(window.width / 40, window.height / 40)
