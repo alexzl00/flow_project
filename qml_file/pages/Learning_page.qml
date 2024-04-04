@@ -10,11 +10,13 @@ Rectangle {
     implicitWidth: parent
     implicitHeight: parent
 
-    property string test_button_png: "../../images/test_button.png"
+    property string test_button_svg: "../../images/test_button.svg"
     property string trash_button_png: '../../images/delete_button_red.svg'
     property string alter_card_button_png: '../../images/edit_button_blue.svg'
     property string backward_button_svg: '../../images/backward_button_black.svg'
     property string forward_button_svg: '../../images/forward_button_black.svg'
+    property string regular_bookmark_svg: '../../images/bookmark-regular.svg'
+    property string solid_bookmark_svg: '../../images/bookmark-solid.svg'
     property int choose_test_rec_preferable_height: learning_page.height * 0.2
 
     property string chosen_set: ''
@@ -139,6 +141,8 @@ Rectangle {
 
                     property int item_index: index
 
+                    property bool marked_as_main: model.bookmarked
+
                     Rectangle{
                         id: list_view_item
                         radius: 20
@@ -154,14 +158,59 @@ Rectangle {
                         Text {
                             id: list_view_item_text
                             text: display
-                            anchors.centerIn: parent
-                            width: parent.width * 0.8
+
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.leftMargin: parent.width * 0.1
+
+                            width: parent.width * 0.7
                             wrapMode: Text.Wrap
+
                             font.pixelSize: Math.min(window.width / 40, window.height / 40)
                             font.family: montserrat.font.family
-                            //font.weight: Font.DemiBold
+                        }
+                        Rectangle {
+                            id: bookmark_container
+                            implicitHeight: parent.height * 0.4
+                            implicitWidth: parent.height * 0.4
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: 'transparent'
+                            z: 2
 
-                            //color: '#F5F5DC'
+
+                            Image {
+                                id: bookmark_button
+                                anchors.centerIn: parent
+
+                                width: bookmark_area.containsMouse ? parent.height * 0.8 : parent.height * 0.7
+                                height: bookmark_area.containsMouse ? parent.height * 0.8 : parent.height * 0.7
+                                fillMode: Image.PreserveAspectFit
+                                mipmap: true
+                                source: marked_as_main === false ? regular_bookmark_svg : solid_bookmark_svg
+
+                            }
+                            MouseArea {
+                                id: bookmark_area
+                                anchors.fill: bookmark_container
+                                hoverEnabled: true
+                                preventStealing: true
+                                z: 2
+
+                                onClicked: {
+                                    if (marked_as_main === false) {
+                                        marked_as_main = true
+                                    } else {
+                                        marked_as_main = false
+                                    }
+                                    sets_view.model.bookmark_set(list_view_item_text.text, marked_as_main)
+                                    if (sets_view.currentPage != 1) {
+                                        sets_view.currentPage = 1
+                                    } else {
+                                        sets_view.model.update(0, sets_view.itemsPerPage)
+                                    }
+                                }
+                            }
                         }
 
                         MouseArea {
@@ -223,7 +272,7 @@ Rectangle {
                 visible: false
                 model: MyModel {}
                 implicitWidth: sets_view.width
-                implicitHeight: sets_view.height
+                implicitHeight: sets_view.preferable_grid_height
                 spacing: 10
 
                 clip: true
@@ -288,8 +337,8 @@ Rectangle {
                                 id: alter_card_button
                                 anchors.centerIn: parent
 
-                                width: parent.width * 0.7
-                                height: parent.height * 0.7
+                                width: alter_area.containsMouse ? parent.height * 0.9 : parent.width * 0.7
+                                height: alter_area.containsMouse ? parent.height * 0.9 : parent.width * 0.7
                                 fillMode: Image.PreserveAspectFit
                                 mipmap: true
                                 source: alter_card_button_png
@@ -300,14 +349,6 @@ Rectangle {
                                 anchors.fill: parent
                                 hoverEnabled: true
 
-                                onEntered: {
-                                    alter_card_button.height = alter_card_button_container.height * 0.9
-                                    alter_card_button.width = alter_card_button_container.height * 0.9
-                                }
-                                onExited: {
-                                    alter_card_button.height = alter_card_button_container.height * 0.7
-                                    alter_card_button.width = alter_card_button_container.height * 0.7
-                                }
                                 onClicked: {
                                     alter_card.visible = true
                                     view_of_cards.visible = false
@@ -331,8 +372,8 @@ Rectangle {
                                 id: trash_button
                                 anchors.centerIn: parent
 
-                                width: parent.width * 0.8
-                                height: parent.height * 0.8
+                                width: delete_area.containsMouse ? parent.height * 0.9 : parent.width * 0.8
+                                height: delete_area.containsMouse ? parent.height * 0.9 : parent.width * 0.8
                                 fillMode: Image.PreserveAspectFit
                                 mipmap: true
                                 source: trash_button_png
@@ -343,14 +384,6 @@ Rectangle {
                                 anchors.fill: parent
                                 hoverEnabled: true
 
-                                onEntered: {
-                                    trash_button.height = trash_button_container.height * 0.9
-                                    trash_button.width = trash_button_container.height * 0.9
-                                }
-                                onExited: {
-                                    trash_button.height = trash_button_container.height * 0.7
-                                    trash_button.width = trash_button_container.height * 0.7
-                                }
                                 onClicked: {
 
                                     if (view_of_cards.model.delete_card([learning_page.chosen_set, card_container.index]) === true){
@@ -361,7 +394,7 @@ Rectangle {
                                         if (sets_view.totalPages < sets_view.currentPage) {
                                             sets_view.currentPage = sets_view.totalPages
                                         }
-                                        sets_view.model.update(sets_view.amount_of_rows * sets_view.amount_of_columns * (sets_view.currentPage - 1), (sets_view.amount_of_rows * sets_view.amount_of_columns * sets_view.currentPage))
+                                        sets_view.model.update(sets_view.itemsPerPage * (sets_view.currentPage - 1), (sets_view.itemsPerPage * sets_view.currentPage))
                                         view_of_cards.visible = false
                                         sets_view.visible = true
                                     }
@@ -587,7 +620,7 @@ Rectangle {
         implicitHeight: view_of_cards.height
         anchors.centerIn: parent
         // color: 'transparent'
-        color: list_view_holder.children_on_hover_color
+        color: '#cdeac2'
         border.color: '#36454F'
         border.width: 2
         radius: 20
@@ -625,29 +658,30 @@ Rectangle {
                 id: submit_alter_card_button
                 Layout.alignment: Qt.AlignBottom && Qt.AlignHCenter
                 implicitHeight: button_text.contentHeight + 20
-                implicitWidth: button_text.contentWidth + 20
-                color: '#fdf7e4'
+                implicitWidth: container.width
+
+                color: submit_alter_card_area.containsMouse ? on_hover_color : main_color
                 radius: 5
 
-                border.color: '#36454F'
-                border.width: 2
+                //border.width: 3
+                //border.color: '#AFE1AF'
+
+                property string main_color: '#36454F'
+                property string on_hover_color: '#1f2f40'
 
                 Text {
                     id: button_text
                     anchors.centerIn: submit_alter_card_button
                     text: 'Accept'
                     font.pixelSize: Math.min(window.width / 50, window.height / 50)
+                    color: 'white'
                 }
+
                 MouseArea {
+                    id: submit_alter_card_area
                     anchors.fill:  submit_alter_card_button
                     hoverEnabled: true
 
-                    onEntered: {
-                        submit_alter_card_button.color = '#C0C0C0'
-                    }
-                    onExited: {
-                        submit_alter_card_button.color = '#fdf7e4'
-                    }
                     onClicked: {
 
                         var question = container.getQuestionText()
@@ -696,7 +730,7 @@ Rectangle {
     }
 
     RowLayout {
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenter: list_view_holder.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: parent.height * 0.05
 
@@ -705,7 +739,7 @@ Rectangle {
             implicitWidth: learn_card_button_text.contentWidth + 20
             implicitHeight: learn_card_button_text.contentHeight + 20
             visible: view_of_cards.visible
-            color: '#fdf7e4'
+            color: learn_cards_button_area.containsMouse ? choose_test_rec.on_hover_color : choose_test_rec.main_color
             radius: 10
 
             border.width: 2
@@ -721,14 +755,6 @@ Rectangle {
                 id: learn_cards_button_area
                 anchors.fill: learn_cards_button
                 hoverEnabled: true
-
-                onEntered: {
-                    learn_cards_button.color = '#C0C0C0'
-
-                }
-                onExited: {
-                    learn_cards_button.color = '#fdf7e4'
-                }
 
                 onClicked: {
                     choose_test_rec_animation.running = true
@@ -755,32 +781,39 @@ Rectangle {
         implicitHeight: 0
         color: '#00887a'
 
+        property string main_color: '#cdeac2'
+        property string on_hover_color: '#bde8aa'
+
         // This rec is only used for layout to be horizontally placed at the center of a learning page
         // and not changing the length of choose_test_rec
         Rectangle {
             id: rec
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.rightMargin: drawer.width
             implicitHeight: parent.height
             color: 'transparent'
 
             RowLayout {
                 anchors.centerIn: parent
                 spacing: 2
+                visible: choose_test_rec.height < learning_page.choose_test_rec_preferable_height / 2 - learning_page.choose_test_rec_preferable_height * 0.2 ? false : true
                 Rectangle {
                     id: test_option_button
                     implicitWidth: choose_test_rec.width * 0.1
-                    implicitHeight: choose_test_rec.height * 0.4
-                    color: '#fdf7e4'
+                    implicitHeight: learning_page.choose_test_rec_preferable_height * 0.4
+                    color: test_option_button_area.containsMouse ? choose_test_rec.on_hover_color : choose_test_rec.main_color
                     radius: 10
+
+                    border.width: 2
+                    border.color: '#192846'
+
                     Image {
                         anchors.centerIn: parent
-                        width: parent.width * 0.6
-                        height: parent.height
+                        width: parent.height * 0.7
+                        height: parent.height * 0.7
                         fillMode: Image.PreserveAspectFit
                         mipmap: true
-                        source: learning_page.test_button_png
+                        source: learning_page.test_button_svg
                     }
                     MouseArea {
                         id: test_option_button_area
@@ -788,12 +821,10 @@ Rectangle {
                         hoverEnabled: true
 
                         onEntered: {
-                            test_option_button.color = '#C0C0C0'
                             // we need to set enabled to false, because outside_choose_test_rec intercepts the click
                             outside_choose_test_rec.enabled = false
                         }
                         onExited: {
-                            test_option_button.color = '#fdf7e4'
                             outside_choose_test_rec.enabled = true
                         }
                         onClicked: {
@@ -803,6 +834,7 @@ Rectangle {
                 }
             }
         }
+
     }
     // This MouseArea is for choose_test_rec to be closed when mouse is clicked outside of this rec
     MouseArea {

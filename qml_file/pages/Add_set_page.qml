@@ -16,6 +16,7 @@ Rectangle{
 
     property string arrow_down_icon: '../../images/arrow_down_bold.png'
     property string arrow_up_icon: '../../images/arrow_up_bold.png'
+    property string circle_check: '../../images/circle-check-regular.svg'
 
     MainDrawer{
         id: drawer
@@ -419,14 +420,6 @@ Rectangle{
 
             }
 
-            //Add_question {
-                //id: container
-            //}
-
-            //Add_answer {
-                //id: container2
-            //}
-
         }
 
         Item {
@@ -471,7 +464,8 @@ Rectangle{
                     && new_question.text.length > 0
                     && new_answer.text.length > 0
                     && new_question.length <= new_card.maximumLength
-                    && new_answer.length <= new_card.maximumLength) {
+                    && new_answer.length <= new_card.maximumLength
+                    && pop_up.y === -pop_up.height ) {
                         set_op.insert_set_cards([add_set_name.text, new_question.text, new_answer.text])
                         new_question.text = ''
                         new_answer.text = ''
@@ -485,7 +479,7 @@ Rectangle{
 
         function onInsert_set(stringText){
             if (stringText = 'true'){
-                animation_pup_up.running = true
+                pop_up.y = 0
                 animation_timer.running = true
             }
         }
@@ -497,43 +491,58 @@ Rectangle{
         repeat: false
 
         onTriggered: {
-            animation_pup_up.running = true
-
+            pop_up.y = -pop_up.height
         }
-    }
-    PropertyAnimation {
-        id: animation_pup_up
-        target: pop_up
-        property: 'height'
-        to: if(pop_up.height == 0) return parent.height * 0.2; else return 0
-        duration: 1000
-        easing.type: Easing.InOutQuint
     }
 
     Rectangle {
         id: pop_up
         anchors.rightMargin: 20
-        anchors.top: parent.top
         anchors.right: parent.right
-        color: '#ffffff'
+        color: view_of_sets_container.main_color
+        border.width: 2
+        border.color: '#36454F'
+
+        radius: 10
         implicitWidth: parent.width * 0.15
-        implicitHeight: 0
+        implicitHeight: parent.height * 0.2
+
         property int fontPixelSize: 0
-        Image {
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: pop_up.width * 0.4
-            height: pop_up.height * 0.4
-            fillMode: Image.PreserveAspectFit
-            mipmap: true
-            source: 'images/acceptance_sign_2.png'
+
+        y: -height
+
+        Behavior on y {
+            NumberAnimation {
+                duration: 1000
+                easing.type: Easing.InOutQuint
+            }
         }
-        Text {
+        ColumnLayout {
             anchors.bottom: parent.bottom
+            anchors.bottomMargin: parent.height * 0.1
             anchors.horizontalCenter: parent.horizontalCenter
-            id: pop_up_text
-            text: 'The word is added \n       Succesfully!'
-            font.pixelSize: 15
+            spacing: 10
+            Rectangle {
+                width: pop_up.width * 0.3
+                height: pop_up.width * 0.3
+                color: 'transparent'
+                Layout.alignment: Qt.AlignHCenter
+                Image {
+                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.width
+                    fillMode: Image.PreserveAspectFit
+                    mipmap: true
+                    source: add_set_page.circle_check
+                }
+            }
+            Text {
+                id: pop_up_text
+                text: 'The word is added \n Succesfully!'
+                horizontalAlignment: Text.AlignHCenter
+                font.family: montserrat.font.family
+                font.pixelSize: 15
+            }
         }
 
     }

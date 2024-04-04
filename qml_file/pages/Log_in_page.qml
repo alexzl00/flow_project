@@ -129,6 +129,13 @@ Rectangle {
                     color: control.down ? '#cccccc' : '#ffffff', control.checked ? '#116466' : 	'#C0C0C0'
 
                     border.color: control.checked ? (control.down ? '#c38d9e' : '#21be2b') : '#999999'
+
+                    Behavior on x {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.InOutQuad
+                        }
+                    }
                 }
 
             }

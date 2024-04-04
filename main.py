@@ -1,4 +1,3 @@
-import mysql.connector
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtQml import QQmlApplicationEngine
 import sys
@@ -27,14 +26,6 @@ import setsModel
 QML_IMPORT_NAME = 'io.qt.textproperties'
 QML_IMPORT_MAJOR_VERSION = 1
 
-mydb = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='gfyu-Dfgs-MLon',
-    database='qt_project'
-)
-
-mycursor = mydb.cursor()
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")

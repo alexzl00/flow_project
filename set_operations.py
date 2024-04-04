@@ -1,21 +1,9 @@
-import mysql.connector
-
 import main
 import user_basic_info
 from itertools import groupby
 
-
-
-mydb = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='gfyu-Dfgs-MLon',
-    database='qt_project'
-)
-
-mycursor = mydb.cursor()
-
-from PySide6.QtCore import QObject, Slot, Signal, QAbstractListModel, QModelIndex, Qt
+from PySide6.QtCore import QObject, Slot, Signal
+import setsModel
 
 
 class InsertSet(QObject):
@@ -61,6 +49,11 @@ class InsertSet(QObject):
             user_basic_info.UserData.user_sets = \
                 {set_name: [{'set_id': set_id, 'question': question, 'answer': answer, 'card_id': card_id}],
                  **user_basic_info.UserData.user_sets}
+            user_basic_info.UserData.user_sets_description = \
+                {set_name: {'bookmarked': False, 'time_bookmarked': None, 'set_id': set_id},
+                 **user_basic_info.UserData.user_sets_description}
+            user_basic_info.UserData.user_sets_description = setsModel.sort_user_sets_description(
+                user_basic_info.UserData.user_sets_description)
 
         self.insert_set.emit('true')
 
@@ -71,9 +64,9 @@ class LoadUserSets:
 
     @staticmethod
     def load_data():
-        result = (main.supabase.table('word_sets').select('set_id, question, answer, card_id, sets(set_name)').
+        result = (main.supabase.table('word_sets').
+                  select('set_id, question, answer, card_id, sets(set_name)').
                   eq('user_id', user_basic_info.UserData.user_id).execute()).data
-
         # sorting the sets in the order from the newest to the oldest
         sorted_result = sorted(result, key=lambda x: (x['set_id']), reverse=True)
 
@@ -81,5 +74,12 @@ class LoadUserSets:
         grouped = dict(((key, list({k: v for k, v in i.items() if not isinstance(v, dict)} for i in group)[::-1])
                         for key, group in groupby(sorted_result, key=lambda x: x['sets']['set_name'])))
         user_basic_info.UserData.user_sets = grouped
+
+        sets_description_query = (main.supabase.table('sets').
+                  select('set_name, bookmarked, time_bookmarked, set_id').
+                  eq('user_id', user_basic_info.UserData.user_id).execute()).data
+        sets_description = {i['set_name']: {k: v for k, v in i.items() if k != 'set_name'} for i in sets_description_query}
+        user_basic_info.UserData.user_sets_description = setsModel.sort_user_sets_description(sets_description)
+
         print(user_basic_info.UserData.user_sets)
 

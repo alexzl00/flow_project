@@ -22,10 +22,13 @@ Rectangle {
 
     property string volume_button_png: '../../images/volume_button.png'
 
-    property string sad_face_button_png: '../../images/cross_button_white.svg' // for bad_button
-    property string neutral_face_button_png: '../../images/circle_button_white.svg' // for good_button
-    property string happy_face_button_png: '../../images/check_mark_white.svg' // for excellent_button
-    property string return_button_png: '../../images/return_button.png' // for return_button
+    property string sad_face_button: '../../images/cross_button_white.svg' // for bad_button
+    property string neutral_face_button: '../../images/circle_button_white.svg' // for good_button
+    property string happy_face_button: '../../images/check_mark_white.svg' // for excellent_button
+    property string return_button: '../../images/return_button.png' // for return_button
+    property string settings_button: '../../images/settings_image.svg'
+    property string minus_button: '../../images/minus_image.svg'
+    property string plus_button: '../../images/plus_image.svg'
 
 
     Title_bar {
@@ -73,13 +76,13 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
             color: 'transparent'
             radius: 10
-            //clip: true
 
-            property int number_of_cards: view_of_cards.count
+            property int number_of_cards: repeater.model.number_of_cards(window.chosen_set_of_cards)
 
             property list<int> list_of_green: []
             property list<int> list_of_orange: []
             property list<int> list_of_red: []
+            property list<int> list_of_grey: repeater.model.generate_list_of_grey(repeater.model.number_of_cards(window.chosen_set_of_cards))
 
             RowLayout {
                 anchors.centerIn: parent
@@ -187,6 +190,12 @@ Rectangle {
 
                     property int grey_length: custom_result_indicator_rec.number_of_cards - custom_result_indicator_rec.list_of_green.length - custom_result_indicator_rec.list_of_orange.length - custom_result_indicator_rec.list_of_red.length
 
+                    // I dont know why, but if the grey_length equals 0
+                    //implicit Width of advancedShapeGrey saves the width as if there was one
+                    onGrey_lengthChanged: {
+                        advancedShapeGrey.width = grey_length / custom_result_indicator_rec.number_of_cards * custom_result_indicator_rec.width
+                    }
+
                     tlRadius: (advancedShapeGreen.width === 0 && advancedShapeOrange.width === 0 && advancedShapeRed.width === 0) ? advancedShapeGrey.height / 2 : 0
 
                     // it's default value for grey rectangle since it on the right, so when it appears, it should be always rounded
@@ -237,11 +246,41 @@ Rectangle {
 
                 property int flip_duration: 800
 
+                property bool show_bad_cards: true
+                property bool show_good_cards: true
+                property bool show_excellent_cards: true
+                property bool show_grey_cards: true
+
+                function update_model_by_color(){
+                    const new_data = [];
+                    if(view_of_cards.show_bad_cards === true){
+                        custom_result_indicator_rec.list_of_red.forEach((element) =>
+                            new_data.push(element));
+                    };
+                    if(view_of_cards.show_good_cards === true){
+                        custom_result_indicator_rec.list_of_orange.forEach((element) =>
+                            new_data.push(element));
+                    };
+                    if(view_of_cards.show_excellent_cards === true){
+                        custom_result_indicator_rec.list_of_green.forEach((element) =>
+                            new_data.push(element));
+                    };
+                    if(view_of_cards.show_grey_cards === true){
+                        custom_result_indicator_rec.list_of_grey.forEach((element) =>
+                            new_data.push(element));
+                    };
+                    repeater.model.cards_for_test_by_color(window.chosen_set_of_cards, new_data);
+                    repeater.model.trial(repeater.itemAt(view_of_cards.currentIndex).itemIndex);
+                }
+
                 Repeater{
                     id: repeater
                     model: CardForTest {}
                     delegate: Loader {
                         active: SwipeView.isCurrentItem || SwipeView.isNextItem || SwipeView.isPreviousItem
+
+                        property int itemIndex: model.index
+
                         Rectangle {
                             id: card_holder
                             width: rec_for_view.width
@@ -251,9 +290,22 @@ Rectangle {
                             color: 'transparent'
                             clip: true
 
-                            property int itemIndex: index
+                            //visible: result_indicator_color.color === colorModel.get(0).green && view_of_cards.show_excellent_cards === false ? false :
+                                     //result_indicator_color.color === colorModel.get(1).orange && view_of_cards.show_good_cards === false ? false :
+                                     //result_indicator_color.color === colorModel.get(2).red && view_of_cards.show_bad_cards === false ? false :
+                                     //result_indicator_color.color === colorModel.get(3).grey ? true :
+                                     //true
+
+                            //visible: custom_result_indicator_rec.list_of_green.indexOf(itemIndex) !== -1 ? true :
+                                     //custom_result_indicator_rec.list_of_orange.indexOf(itemIndex) !== -1 ? true :
+                                     //custom_result_indicator_rec.list_of_red.indexOf(itemIndex) !== -1 ? false :
+                                     //true
+
+                            property int itemIndex: parent.itemIndex
 
                             property string answer: model.answer
+
+                            property string on_hover_color: '#e6dac7'
 
                             Flipable {
                                 id: flipable
@@ -303,7 +355,7 @@ Rectangle {
                                             hoverEnabled: true
 
                                             onEntered: {
-                                                play_sound_button.color = '#e6dac7'
+                                                play_sound_button.color = card_holder.on_hover_color
 
                                             }
                                             onExited: {
@@ -312,6 +364,347 @@ Rectangle {
 
                                             onClicked: {
                                                 text_to_speech.play_text(answer.text)
+                                            }
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        id: settings_list_container
+                                        implicitWidth: parent.width * 0.8
+                                        implicitHeight: question_holder.height * 0.5
+                                        radius: width / 15
+                                        visible: false
+                                        color: main_color
+
+                                        // make it invisible so it doesnt cause positioning troubles
+                                        onWidthChanged: {
+                                            visible = false
+                                        }
+                                        onHeightChanged: {
+                                            visible = false
+                                        }
+
+                                        z: 3
+
+                                        property int preferable_height: question_holder.height * 0.5
+                                        property int height_of_children: preferable_height - radius * 2
+
+                                        // images in recs in column layout
+                                        property int image_main_height_width: settings_list_container.height * 0.17
+                                        property int image_on_hover_height_width: settings_list_container.height * 0.2
+
+                                        property string main_color: '#cdeac2'
+                                        property string on_hover_color: '#bde8aa'
+
+                                        Rectangle {
+                                            id: settings_container
+                                            implicitHeight: parent.height_of_children
+                                            implicitWidth: parent.width
+                                            anchors.centerIn: parent
+                                            color: 'transparent'
+                                            visible: parent.visible
+
+                                            ColumnLayout {
+                                                anchors.centerIn: parent
+                                                spacing: 0
+                                                visible: parent.visible
+
+                                                Rectangle {
+                                                    id: show_bad_cards
+                                                    implicitWidth: settings_list_container.width
+                                                    implicitHeight: settings_container.height / 4
+                                                    color: settings_list_container.main_color
+
+                                                    Text {
+                                                        anchors.left: parent.left
+                                                        anchors.leftMargin: parent.width * 0.1
+                                                        anchors.verticalCenter: parent.verticalCenter
+                                                        text: view_of_cards.show_bad_cards === true ? 'Hide bad cards' : 'Show bad cards'
+                                                        font.family: montserrat.font.family
+                                                        font.pixelSize: Math.min(window.width / 55, window.height / 55)
+                                                    }
+
+                                                    Rectangle {
+                                                        id: bad_card_image_container
+                                                        implicitWidth: settings_list_container.image_on_hover_height_width
+                                                        implicitHeight: settings_list_container.image_on_hover_height_width
+                                                        anchors.right: parent.right
+                                                        anchors.rightMargin: 5
+                                                        anchors.verticalCenter: parent.verticalCenter
+                                                        color: 'transparent'
+
+                                                        Image {
+                                                            id: bad_card_image
+                                                            anchors.centerIn: parent
+
+                                                            width: bad_card_image_area.containsMouse ? settings_list_container.image_on_hover_height_width : settings_list_container.image_main_height_width
+                                                            height: bad_card_image_area.containsMouse ? settings_list_container.image_on_hover_height_width : settings_list_container.image_main_height_width
+                                                            fillMode: Image.PreserveAspectFit
+                                                            mipmap: true
+                                                            source: view_of_cards.show_bad_cards === true ? test_page.minus_button : test_page.plus_button
+                                                        }
+                                                    }
+
+                                                    MouseArea {
+                                                        id: bad_card_image_area
+                                                        anchors.fill: show_bad_cards
+                                                        hoverEnabled: true
+
+                                                        onEntered: {
+                                                            show_bad_cards.color = settings_list_container.on_hover_color
+                                                        }
+
+                                                        onExited: {
+                                                            show_bad_cards.color = settings_list_container.main_color
+                                                        }
+
+                                                        onClicked: {
+                                                            if ((view_of_cards.show_excellent_cards && custom_result_indicator_rec.list_of_green.length > 0 ) ||
+                                                            (view_of_cards.show_good_cards && custom_result_indicator_rec.list_of_orange.length > 0) ||
+                                                            (view_of_cards.show_grey_cards && custom_result_indicator_rec.list_of_grey.length > 0)) {
+                                                                if (view_of_cards.show_bad_cards === true) {
+                                                                    view_of_cards.show_bad_cards = false
+                                                                } else {
+                                                                    view_of_cards.show_bad_cards = true
+                                                                }
+                                                                view_of_cards.update_model_by_color()
+                                                            }
+                                                        }
+
+                                                    }
+                                                }
+
+                                                Rectangle {
+                                                    id: show_good_cards
+                                                    implicitWidth: settings_list_container.width
+                                                    implicitHeight: settings_container.height / 4
+                                                    color: settings_list_container.main_color
+
+                                                    Text {
+                                                        anchors.left: parent.left
+                                                        anchors.leftMargin: parent.width * 0.1
+                                                        anchors.verticalCenter: parent.verticalCenter
+                                                        text: view_of_cards.show_good_cards === true ? 'Hide good cards' : 'Show good cards'
+                                                        font.family: montserrat.font.family
+                                                        font.pixelSize: Math.min(window.width / 55, window.height / 55)
+                                                    }
+                                                    Rectangle {
+                                                        id: good_card_image_container
+                                                        implicitWidth: settings_list_container.image_on_hover_height_width
+                                                        implicitHeight: settings_list_container.image_on_hover_height_width
+                                                        anchors.right: parent.right
+                                                        anchors.rightMargin: 5
+                                                        anchors.verticalCenter: parent.verticalCenter
+                                                        color: 'transparent'
+
+                                                        Image {
+                                                            id: good_card_image
+                                                            anchors.centerIn: parent
+
+                                                            width: good_card_image_area.containsMouse ? settings_list_container.image_on_hover_height_width : settings_list_container.image_main_height_width
+                                                            height: good_card_image_area.containsMouse ? settings_list_container.image_on_hover_height_width : settings_list_container.image_main_height_width
+                                                            fillMode: Image.PreserveAspectFit
+                                                            mipmap: true
+                                                            source: view_of_cards.show_good_cards === true ? test_page.minus_button : test_page.plus_button
+                                                        }
+                                                    }
+
+                                                    MouseArea {
+                                                        id: good_card_image_area
+                                                        anchors.fill: parent
+                                                        hoverEnabled: true
+
+                                                        onEntered: {
+                                                            show_good_cards.color = settings_list_container.on_hover_color
+                                                        }
+
+                                                        onExited: {
+                                                            show_good_cards.color = settings_list_container.main_color
+                                                        }
+
+                                                        onClicked: {
+                                                            if ((view_of_cards.show_bad_cards && custom_result_indicator_rec.list_of_red.length > 0 ) ||
+                                                            (view_of_cards.show_excellent_cards && custom_result_indicator_rec.list_of_green.length > 0) ||
+                                                            (view_of_cards.show_grey_cards && custom_result_indicator_rec.list_of_grey.length > 0)) {
+                                                                if (view_of_cards.show_good_cards === true) {
+                                                                    view_of_cards.show_good_cards = false
+                                                                } else {
+                                                                    view_of_cards.show_good_cards = true
+                                                                }
+                                                                view_of_cards.update_model_by_color()
+                                                            }
+                                                        }
+
+                                                    }
+                                                }
+                                                Rectangle {
+                                                    id: show_excellent_cards
+                                                    implicitWidth: settings_list_container.width
+                                                    implicitHeight: settings_container.height / 4
+                                                    color: settings_list_container.main_color
+
+                                                    Text {
+                                                        anchors.left: parent.left
+                                                        anchors.leftMargin: parent.width * 0.1
+                                                        anchors.verticalCenter: parent.verticalCenter
+                                                        text: view_of_cards.show_excellent_cards === true ? 'Hide excellent cards' : 'Show excellent cards'
+                                                        font.family: montserrat.font.family
+                                                        font.pixelSize: Math.min(window.width / 55, window.height / 55)
+                                                    }
+                                                    Rectangle {
+                                                        id: excellent_card_image_container
+                                                        implicitWidth: settings_list_container.image_on_hover_height_width
+                                                        implicitHeight: settings_list_container.image_on_hover_height_width
+                                                        anchors.right: parent.right
+                                                        anchors.rightMargin: 5
+                                                        anchors.verticalCenter: parent.verticalCenter
+                                                        color: 'transparent'
+
+                                                        Image {
+                                                            id: excellent_card_image
+                                                            anchors.centerIn: parent
+
+                                                            width: excellent_card_image_area.containsMouse ? settings_list_container.image_on_hover_height_width : settings_list_container.image_main_height_width
+                                                            height: excellent_card_image_area.containsMouse ? settings_list_container.image_on_hover_height_width : settings_list_container.image_main_height_width
+                                                            fillMode: Image.PreserveAspectFit
+                                                            mipmap: true
+                                                            source: view_of_cards.show_excellent_cards === true ? test_page.minus_button : test_page.plus_button
+                                                        }
+                                                    }
+
+                                                    MouseArea {
+                                                        id: excellent_card_image_area
+                                                        anchors.fill: show_excellent_cards
+                                                        hoverEnabled: true
+
+                                                        onEntered: {
+                                                            show_excellent_cards.color = settings_list_container.on_hover_color
+                                                        }
+
+                                                        onExited: {
+                                                            show_excellent_cards.color = settings_list_container.main_color
+                                                        }
+
+                                                        onClicked: {
+                                                            if ((view_of_cards.show_bad_cards && custom_result_indicator_rec.list_of_red.length > 0 ) ||
+                                                            (view_of_cards.show_good_cards && custom_result_indicator_rec.list_of_orange.length > 0) ||
+                                                            (view_of_cards.show_grey_cards && custom_result_indicator_rec.list_of_grey.length > 0)){
+                                                                if (view_of_cards.show_excellent_cards === true) {
+                                                                    view_of_cards.show_excellent_cards = false
+                                                                } else {
+                                                                    view_of_cards.show_excellent_cards = true
+                                                                }
+                                                                view_of_cards.update_model_by_color()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                Rectangle {
+                                                    id: show_grey_cards
+                                                    implicitWidth: settings_list_container.width
+                                                    implicitHeight: settings_container.height / 4
+                                                    color: settings_list_container.main_color
+
+                                                    Text {
+                                                        anchors.left: parent.left
+                                                        anchors.leftMargin: parent.width * 0.1
+                                                        anchors.verticalCenter: parent.verticalCenter
+                                                        text: view_of_cards.show_grey_cards === true ? 'Hide grey cards' : 'Show grey cards'
+                                                        font.family: montserrat.font.family
+                                                        font.pixelSize: Math.min(window.width / 55, window.height / 55)
+                                                    }
+                                                    Rectangle {
+                                                        id: grey_card_image_container
+                                                        implicitWidth: settings_list_container.image_on_hover_height_width
+                                                        implicitHeight: settings_list_container.image_on_hover_height_width
+                                                        anchors.right: parent.right
+                                                        anchors.rightMargin: 5
+                                                        anchors.verticalCenter: parent.verticalCenter
+                                                        color: 'transparent'
+
+                                                        Image {
+                                                            id: grey_card_image
+                                                            anchors.centerIn: parent
+
+                                                            width: grey_card_image_area.containsMouse ? settings_list_container.image_on_hover_height_width : settings_list_container.image_main_height_width
+                                                            height: grey_card_image_area.containsMouse ? settings_list_container.image_on_hover_height_width : settings_list_container.image_main_height_width
+                                                            fillMode: Image.PreserveAspectFit
+                                                            mipmap: true
+                                                            source: view_of_cards.show_grey_cards === true ? test_page.minus_button : test_page.plus_button
+                                                        }
+                                                    }
+
+                                                    MouseArea {
+                                                        id: grey_card_image_area
+                                                        anchors.fill: show_grey_cards
+                                                        hoverEnabled: true
+
+                                                        onEntered: {
+                                                            show_grey_cards.color = settings_list_container.on_hover_color
+                                                        }
+
+                                                        onExited: {
+                                                            show_grey_cards.color = settings_list_container.main_color
+                                                        }
+
+                                                        onClicked: {
+                                                            if ((view_of_cards.show_bad_cards && custom_result_indicator_rec.list_of_red.length > 0 ) ||
+                                                            (view_of_cards.show_good_cards && custom_result_indicator_rec.list_of_orange.length > 0) ||
+                                                            (view_of_cards.show_excellent_cards && custom_result_indicator_rec.list_of_green.length > 0)) {
+                                                                if (view_of_cards.show_grey_cards === true) {
+                                                                    view_of_cards.show_grey_cards = false
+                                                                } else {
+                                                                    view_of_cards.show_grey_cards = true
+                                                                }
+                                                                view_of_cards.update_model_by_color()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        id: settings_button
+                                        implicitWidth: parent.height * 0.13
+                                        implicitHeight: parent.height * 0.13
+                                        color: 'transparent'
+                                        radius: width / 2
+                                        z: 3
+
+                                        anchors.top: parent.top
+                                        anchors.right: parent.right
+                                        anchors.rightMargin: 4
+                                        anchors.topMargin: 4
+
+                                        Image {
+                                            id: settings_image
+                                            anchors.centerIn: parent
+                                            width: settings_button_area.containsMouse ? parent.width * 0.58 : parent.width * 0.5
+                                            height: settings_button_area.containsMouse ? parent.width * 0.58 : parent.width * 0.5
+                                            fillMode: Image.PreserveAspectFit
+                                            mipmap: true
+                                            source: test_page.settings_button
+                                        }
+
+                                        MouseArea {
+                                            id: settings_button_area
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+
+                                            onClicked: {
+                                                //settings_list_container_animation.running = true
+
+                                                if (settings_list_container.visible === true) {
+                                                    settings_list_container.visible = false
+                                                } else {
+                                                    settings_list_container.visible = true
+                                                }
+
+                                                settings_list_container.x = settings_button.x - settings_list_container.width / 1.15
+                                                // Added plus two so it shows up under the line that divides Flickable and the rest of front rectangle
+                                                settings_list_container.y = question_flickable.y + 2
                                             }
                                         }
                                     }
@@ -527,7 +920,7 @@ Rectangle {
 
             main_color: '#cdeac2'
             on_hover_color: '#bde8aa'
-            image_source: test_page.return_button_png
+            image_source: test_page.return_button
 
             Timer {
                 id: flip_timer1
@@ -577,7 +970,7 @@ Rectangle {
 
             main_color: '#ef1910'
             on_hover_color: '#d50202'
-            image_source: test_page.sad_face_button_png
+            image_source: test_page.sad_face_button
             border_color: '#FA5F55'
 
             Timer {
@@ -587,18 +980,25 @@ Rectangle {
                 running: false
 
                 onTriggered: {
-                    var index_of_red = custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex)
-                    if (index_of_red === -1) {
-                        custom_result_indicator_rec.list_of_red.push(view_of_cards.currentIndex)
+                    var indexOfCurrentCard = repeater.itemAt(view_of_cards.currentIndex).itemIndex
+                    var index_of_red = custom_result_indicator_rec.list_of_red.indexOf(indexOfCurrentCard)
 
-                        var index_of_green = custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex)
+                    if (index_of_red === -1) {
+                        custom_result_indicator_rec.list_of_red.push(indexOfCurrentCard)
+
+                        var index_of_green = custom_result_indicator_rec.list_of_green.indexOf(indexOfCurrentCard)
                         if (index_of_green !== -1) {
                             custom_result_indicator_rec.list_of_green.splice(index_of_green, 1)
                         }
 
-                        var index_of_orange = custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex)
+                        var index_of_orange = custom_result_indicator_rec.list_of_orange.indexOf(indexOfCurrentCard)
                         if (index_of_orange !== -1) {
                             custom_result_indicator_rec.list_of_orange.splice(index_of_orange, 1)
+                        }
+
+                        var index_of_grey = custom_result_indicator_rec.list_of_grey.indexOf(indexOfCurrentCard)
+                        if (index_of_grey !== -1) {
+                            custom_result_indicator_rec.list_of_grey.splice(index_of_grey, 1)
                         }
                     }
 
@@ -646,7 +1046,7 @@ Rectangle {
 
             main_color: '#f76f0b'
             on_hover_color: '#f95504'
-            image_source: test_page.neutral_face_button_png
+            image_source: test_page.neutral_face_button
             border_color: '#FFAA33'
 
             Timer {
@@ -656,18 +1056,24 @@ Rectangle {
                 running: false
 
                 onTriggered: {
-                    var index_of_orange = custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex)
+                    var indexOfCurrentCard = repeater.itemAt(view_of_cards.currentIndex).itemIndex
+                    var index_of_orange = custom_result_indicator_rec.list_of_orange.indexOf(indexOfCurrentCard)
                     if (index_of_orange === -1) {
-                        custom_result_indicator_rec.list_of_orange.push(view_of_cards.currentIndex)
+                        custom_result_indicator_rec.list_of_orange.push(indexOfCurrentCard)
 
-                        var index_of_green = custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex)
+                        var index_of_green = custom_result_indicator_rec.list_of_green.indexOf(indexOfCurrentCard)
                         if (index_of_green !== -1) {
                             custom_result_indicator_rec.list_of_green.splice(index_of_green, 1)
                         }
 
-                        var index_of_red = custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex)
+                        var index_of_red = custom_result_indicator_rec.list_of_red.indexOf(indexOfCurrentCard)
                         if (index_of_red !== -1) {
                             custom_result_indicator_rec.list_of_red.splice(index_of_red, 1)
+                        }
+
+                        var index_of_grey = custom_result_indicator_rec.list_of_grey.indexOf(indexOfCurrentCard)
+                        if (index_of_grey !== -1) {
+                            custom_result_indicator_rec.list_of_grey.splice(index_of_grey, 1)
                         }
                     }
 
@@ -713,7 +1119,7 @@ Rectangle {
 
             on_hover_color: '#107b18'
             main_color: '#1f930f'
-            image_source: test_page.happy_face_button_png
+            image_source: test_page.happy_face_button
             border_color: '#50C878'
 
 
@@ -724,18 +1130,24 @@ Rectangle {
                 running: false
 
                 onTriggered: {
-                    var index_of_green = custom_result_indicator_rec.list_of_green.indexOf(view_of_cards.currentIndex)
+                    var indexOfCurrentCard = repeater.itemAt(view_of_cards.currentIndex).itemIndex
+                    var index_of_green = custom_result_indicator_rec.list_of_green.indexOf(indexOfCurrentCard)
                     if (index_of_green === -1) {
-                        custom_result_indicator_rec.list_of_green.push(view_of_cards.currentIndex)
+                        custom_result_indicator_rec.list_of_green.push(indexOfCurrentCard)
 
-                        var index_of_orange = custom_result_indicator_rec.list_of_orange.indexOf(view_of_cards.currentIndex)
+                        var index_of_orange = custom_result_indicator_rec.list_of_orange.indexOf(indexOfCurrentCard)
                         if (index_of_orange !== -1) {
                             custom_result_indicator_rec.list_of_orange.splice(index_of_orange, 1)
                         }
 
-                        var index_of_red = custom_result_indicator_rec.list_of_red.indexOf(view_of_cards.currentIndex)
+                        var index_of_red = custom_result_indicator_rec.list_of_red.indexOf(indexOfCurrentCard)
                         if (index_of_red !== -1) {
                             custom_result_indicator_rec.list_of_red.splice(index_of_red, 1)
+                        }
+
+                        var index_of_grey = custom_result_indicator_rec.list_of_grey.indexOf(indexOfCurrentCard)
+                        if (index_of_grey !== -1) {
+                            custom_result_indicator_rec.list_of_grey.splice(index_of_grey, 1)
                         }
                     }
 
