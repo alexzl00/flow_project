@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.macOS
 import QtQuick.Layouts
 import '../../my_components'
 
@@ -23,6 +23,10 @@ Rectangle {
         id: montserrat
         source: '../../fonts/Montserrat-Medium.ttf'
     }
+    FontLoader {
+        id: dancingScript
+        source: '../../fonts/DancingScript-Medium.ttf'
+    }
 
     ColumnLayout{
         id: main_layout
@@ -34,7 +38,7 @@ Rectangle {
             text: "Flow"
             Layout.alignment: Qt.AlignHCenter
             font {
-                family: 'Dancing Script'
+                family: dancingScript.font.family
                 pixelSize: 70
             }
         }
@@ -49,7 +53,9 @@ Rectangle {
                 font.bold: false
                 font.pointSize: 14
                 font.family: montserrat.font.family
+                color: 'black'
                 placeholderText: 'Enter your email'
+                placeholderTextColor: '#818589'
                 width: parent.width
 
                 anchors.verticalCenter: parent.verticalCenter
@@ -81,7 +87,9 @@ Rectangle {
                 font.bold: false
                 font.pointSize: 14
                 font.family: montserrat.font.family
+                color: 'black'
                 placeholderText: 'Enter your password'
+                placeholderTextColor: '#818589'
                 echoMode: TextInput.Password
                 width: parent.width
 
@@ -91,7 +99,6 @@ Rectangle {
                     id: log_p
                     radius: password_field_holder.radius
                     width: password_field_holder.width
-
                 }
             }
         }

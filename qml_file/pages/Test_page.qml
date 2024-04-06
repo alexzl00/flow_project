@@ -29,7 +29,7 @@ Rectangle {
     property string settings_button: '../../images/settings_image.svg'
     property string minus_button: '../../images/minus_image.svg'
     property string plus_button: '../../images/plus_image.svg'
-
+    property string swap_button: '../../images/swap_icon.svg'
 
     Title_bar {
         id: titleBar
@@ -250,6 +250,9 @@ Rectangle {
                 property bool show_good_cards: true
                 property bool show_excellent_cards: true
                 property bool show_grey_cards: true
+
+                // if set to false, questions are on front
+                property bool swap_question_answer: false
 
                 function update_model_by_color(){
                     const new_data = [];
@@ -664,47 +667,74 @@ Rectangle {
                                             }
                                         }
                                     }
-
-                                    Rectangle {
-                                        id: settings_button
-                                        implicitWidth: parent.height * 0.13
-                                        implicitHeight: parent.height * 0.13
-                                        color: 'transparent'
-                                        radius: width / 2
-                                        z: 3
-
+                                    RowLayout {
+                                        spacing: 0
                                         anchors.top: parent.top
                                         anchors.right: parent.right
                                         anchors.rightMargin: 4
                                         anchors.topMargin: 4
 
-                                        Image {
-                                            id: settings_image
-                                            anchors.centerIn: parent
-                                            width: settings_button_area.containsMouse ? parent.width * 0.58 : parent.width * 0.5
-                                            height: settings_button_area.containsMouse ? parent.width * 0.58 : parent.width * 0.5
-                                            fillMode: Image.PreserveAspectFit
-                                            mipmap: true
-                                            source: test_page.settings_button
+                                        // swaps answers and questions and via vers
+                                        Rectangle {
+                                            id: swap_button
+                                            implicitWidth: question_holder.height * 0.13
+                                            implicitHeight: question_holder.height * 0.13
+                                            color: 'transparent'
+
+                                            Image {
+                                                id: swap_image
+                                                anchors.centerIn: parent
+                                                width: swap_button_area.containsMouse ? parent.width * 0.58 : parent.width * 0.5
+                                                height: swap_button_area.containsMouse ? parent.width * 0.58 : parent.width * 0.5
+                                                fillMode: Image.PreserveAspectFit
+                                                mipmap: true
+                                                source: test_page.swap_button
+                                            }
+
+                                            MouseArea {
+                                                id: swap_button_area
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+
+                                                onClicked: {
+                                                    view_of_cards.swap_question_answer = !view_of_cards.swap_question_answer
+                                                }
+                                            }
                                         }
 
-                                        MouseArea {
-                                            id: settings_button_area
-                                            anchors.fill: parent
-                                            hoverEnabled: true
+                                        Rectangle {
+                                            id: settings_button
+                                            implicitWidth: question_holder.height * 0.13
+                                            implicitHeight: question_holder.height * 0.13
+                                            color: 'transparent'
+                                            radius: width / 2
+                                            z: 3
 
-                                            onClicked: {
-                                                //settings_list_container_animation.running = true
 
-                                                if (settings_list_container.visible === true) {
-                                                    settings_list_container.visible = false
-                                                } else {
-                                                    settings_list_container.visible = true
+                                            Image {
+                                                id: settings_image
+                                                anchors.centerIn: parent
+                                                width: settings_button_area.containsMouse ? parent.width * 0.58 : parent.width * 0.5
+                                                height: settings_button_area.containsMouse ? parent.width * 0.58 : parent.width * 0.5
+                                                fillMode: Image.PreserveAspectFit
+                                                mipmap: true
+                                                source: test_page.settings_button
+                                            }
+
+                                            MouseArea {
+                                                id: settings_button_area
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+
+                                                onClicked: {
+                                                    //settings_list_container_animation.running = true
+
+                                                    settings_list_container.visible = !settings_list_container.visible
+
+                                                    settings_list_container.x = question_flickable.x + question_flickable.width / 2 - settings_list_container.width / 2
+                                                    // Added plus two so it shows up under the line that divides Flickable and the rest of front rectangle
+                                                    settings_list_container.y = question_flickable.y + 2
                                                 }
-
-                                                settings_list_container.x = settings_button.x - settings_list_container.width / 1.15
-                                                // Added plus two so it shows up under the line that divides Flickable and the rest of front rectangle
-                                                settings_list_container.y = question_flickable.y + 2
                                             }
                                         }
                                     }
@@ -776,7 +806,7 @@ Rectangle {
 
                                                 anchors.centerIn: question_text_holder
 
-                                                text: model.question
+                                                text: view_of_cards.swap_question_answer ? model.answer : model.question
                                                 width: question_flickable.width
                                                 wrapMode: Text.Wrap
 
@@ -850,7 +880,7 @@ Rectangle {
 
                                                 anchors.centerIn: answer_text_holder
 
-                                                text: model.answer
+                                                text: view_of_cards.swap_question_answer ? model.question : model.answer
                                                 width: answer_flickable.width
                                                 wrapMode: Text.Wrap
 

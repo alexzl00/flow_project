@@ -1,5 +1,4 @@
 import set_operations
-import mysql.connector
 import user_basic_info
 from PySide6.QtCore import QObject, Slot, Signal
 import main
@@ -8,16 +7,6 @@ from postgrest import APIError
 
 QML_IMPORT_NAME = 'io.qt.textproperties'
 QML_IMPORT_MAJOR_VERSION = 1
-
-
-mydb = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='gfyu-Dfgs-MLon',
-    database='qt_project'
-)
-
-mycursor = mydb.cursor()
 
 
 class CheckForValidEmailPassword(QObject):

@@ -24,6 +24,11 @@ Rectangle {
     }
 
     FontLoader {
+        id: dancingScript
+        source: '../../fonts/DancingScript-Medium.ttf'
+    }
+
+    FontLoader {
         id: montserrat
         source: '../../fonts/Montserrat-Medium.ttf'
     }
@@ -37,7 +42,7 @@ Rectangle {
             text: "Flow"
             Layout.alignment: Qt.AlignHCenter
             font {
-                family: 'Dancing Script'
+                family: dancingScript.font.family
                 pixelSize: 70
             }
         }
@@ -70,6 +75,8 @@ Rectangle {
                 font.family: montserrat.font.family
                 width: parent.width
                 placeholderText: 'Set your email'
+                placeholderTextColor: '#818589'
+                color: 'black'
 
                 anchors.verticalCenter: parent.verticalCenter
 
@@ -103,6 +110,8 @@ Rectangle {
                 font.pointSize: 14
                 font.family: montserrat.font.family
                 placeholderText: 'Set your password'
+                placeholderTextColor: '#818589'
+                color: 'black'
                 echoMode: TextInput.Password
                 width: parent.width
 

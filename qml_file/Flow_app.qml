@@ -88,7 +88,7 @@ ApplicationWindow{
         anchors.fill:parent
         replaceEnter: Transition {
             XAnimator {
-                from: (control.mirrored ? -1 : 1) * -control.width
+                from: 0
                 to: 0
                 duration: 1
                 easing.type: Easing.OutCubic
@@ -98,7 +98,7 @@ ApplicationWindow{
         replaceExit: Transition {
             XAnimator {
                 from: 0
-                to: (control.mirrored ? -1 : 1) * control.width
+                to: 0
                 duration: 1
                 easing.type: Easing.OutCubic
             }

@@ -6,9 +6,6 @@ import '../../my_components'
 
 Rectangle{
     id: main_flow_page
-    anchors.right: parent.right
-    implicitWidth: parent.width
-    implicitHeight: parent
     gradient: Gradient{
         GradientStop{position: 0.0; color: '#5cdb95'}
         GradientStop{position: 0.7; color: '#379683'}

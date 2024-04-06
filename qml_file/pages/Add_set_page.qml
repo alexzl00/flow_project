@@ -31,6 +31,11 @@ Rectangle{
         source: '../../fonts/Montserrat-Medium.ttf'
     }
 
+    FontLoader {
+        id: dancingScript
+        source: '../../fonts/DancingScript-Medium.ttf'
+    }
+
     PropertyAnimation {
         id: view_of_sets_container_animation
         target: view_of_sets_container
@@ -141,7 +146,7 @@ Rectangle{
             text: "Flow"
             Layout.alignment: Qt.AlignHCenter
             font {
-                family: 'Dancing Script'
+                family: dancingScript.font.family
                 pixelSize: Math.min(window.width / 8.8, window.height / 8.8)
             }
         }
