@@ -1,9 +1,9 @@
 import main
-import user_basic_info
+from main_logic import user_basic_info
 from itertools import groupby
 
 from PySide6.QtCore import QObject, Slot, Signal
-import setsModel
+from GUI_logic import setsModel
 
 
 class InsertSet(QObject):
@@ -76,8 +76,8 @@ class LoadUserSets:
         user_basic_info.UserData.user_sets = grouped
 
         sets_description_query = (main.supabase.table('sets').
-                  select('set_name, bookmarked, time_bookmarked, set_id').
-                  eq('user_id', user_basic_info.UserData.user_id).execute()).data
+                                  select('set_name, bookmarked, time_bookmarked, set_id').
+                                  eq('user_id', user_basic_info.UserData.user_id).execute()).data
         sets_description = {i['set_name']: {k: v for k, v in i.items() if k != 'set_name'} for i in sets_description_query}
         user_basic_info.UserData.user_sets_description = setsModel.sort_user_sets_description(sets_description)
 

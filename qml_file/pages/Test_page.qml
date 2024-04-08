@@ -60,7 +60,7 @@ Rectangle {
             id: show_percentage_of_indicator_text
             anchors.centerIn: parent
             text: ''
-            font.family: test_page.montserrat
+            font.family: montserrat.font.family
             font.pixelSize: Math.min(window.width / 50, window.height / 50)
         }
     }
@@ -273,7 +273,6 @@ Rectangle {
                             new_data.push(element));
                     };
                     repeater.model.cards_for_test_by_color(window.chosen_set_of_cards, new_data);
-                    repeater.model.trial(repeater.itemAt(view_of_cards.currentIndex).itemIndex);
                 }
 
                 Repeater{

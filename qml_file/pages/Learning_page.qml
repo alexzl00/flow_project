@@ -22,10 +22,6 @@ Rectangle {
     property string chosen_set: ''
 
     FontLoader {
-        id: openSansFont
-        source: '../../fonts/OpenSans-Italic-VariableFont_wdth,wght.ttf'
-    }
-    FontLoader {
         id: montserrat
         source: '../../fonts/Montserrat-Medium.ttf'
     }
@@ -282,35 +278,8 @@ Rectangle {
 
                 boundsBehavior: Flickable.StopAtBounds
 
-
-                ScrollBar.vertical: ScrollBar {
-                    parent: view_of_cards.parent
-                    anchors.top: view_of_cards.top
-                    anchors.right: view_of_cards.right
-                    anchors.bottom: view_of_cards.bottom
-
-                    hoverEnabled: false
-
-                    policy: sets_view.visible ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
-
-                    orientation: Qt.Vertical
-                    interactive: false
-                    pressed: false
-
-                    minimumSize: 0.1
-                    contentItem: Rectangle {
-                        implicitWidth: 8
-                        radius: width / 2
-                        color: '#00A36C'
-                    }
-                    background: Rectangle {
-                        implicitWidth: 8
-                        color: list_view_holder.children_on_hover_color
-                    }
-                }
-
                 delegate: Item{
-                    implicitWidth: parent.width
+                    implicitWidth: view_of_cards.width
                     id: card_container
                     property int index: DelegateModel.itemsIndex
 
@@ -563,7 +532,7 @@ Rectangle {
             text: `${sets_view.currentPage} / ${sets_view.totalPages}`
             color: 'black'
             font {
-                family: learning_page.openSansFont.name
+                family: montserrat.font.family
                 pixelSize: backward.height / 2
             }
         }

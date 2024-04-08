@@ -3,7 +3,7 @@ from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot, QObject
 from PySide6.QtQml import QmlElement
 
 import main
-import user_basic_info
+from main_logic import user_basic_info
 
 from datetime import datetime
 
@@ -94,7 +94,8 @@ class MyModel(QAbstractListModel):
             user_basic_info.UserData.user_sets_description[set_name]['time_bookmarked'] = None
 
         user_basic_info.UserData.user_sets_description[set_name]['bookmarked'] = bookmark
-        user_basic_info.UserData.user_sets_description = sort_user_sets_description(user_basic_info.UserData.user_sets_description)
+        user_basic_info.UserData.user_sets_description = sort_user_sets_description(
+            user_basic_info.UserData.user_sets_description)
 
     # for view_of_cards
     @Slot(str, result=bool)

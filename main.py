@@ -2,17 +2,11 @@ from PySide6.QtCore import QObject, Signal
 from PySide6.QtQml import QQmlApplicationEngine
 import sys
 import os
-import textToSpeechPlayer
 
 from PySide6.QtWidgets import QApplication
-from gotrue import SignInWithPasswordlessCredentials
-from supafunc.errors import FunctionsRelayError, FunctionsHttpError
 
-import loging_creating_changing_functions_for_pages
-import set_operations
-import UserActivityBarChart
-import tracking_user_activity
-import reset_user_password
+from main_logic import loging_creating_changing_functions_for_pages, reset_user_password, tracking_user_activity
+from GUI_logic import set_operations, textToSpeechPlayer, UserActivityBarChart
 from datetime import datetime
 
 
@@ -21,7 +15,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # it is not shown to be used, but it is needed indeed, otherwise program exits -1
-import setsModel
 
 QML_IMPORT_NAME = 'io.qt.textproperties'
 QML_IMPORT_MAJOR_VERSION = 1

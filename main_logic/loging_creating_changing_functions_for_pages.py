@@ -1,5 +1,5 @@
-import set_operations
-import user_basic_info
+from GUI_logic import set_operations
+from main_logic import user_basic_info
 from PySide6.QtCore import QObject, Slot, Signal
 import main
 import threading

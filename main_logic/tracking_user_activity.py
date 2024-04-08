@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import main
 from dataclasses import dataclass
 
-import user_basic_info
+from main_logic import user_basic_info
 
 
 @dataclass()

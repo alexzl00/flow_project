@@ -1,14 +1,8 @@
-import asyncio
-
 from PySide6.QtCore import QObject
 from PySide6.QtCore import Slot, Signal
 import threading
 
-from gotrue import SignInWithPasswordlessCredentials
 from gotrue.errors import AuthApiError
-from gotrue.helpers import handle_exception
-from httpx import HTTPStatusError
-
 import main
 
 

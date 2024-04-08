@@ -3,7 +3,7 @@ from PySide6.QtCore import QObject, Property
 import main
 from itertools import groupby
 from datetime import datetime, timedelta
-import user_basic_info
+from main_logic import user_basic_info
 
 
 class Chart(QObject):
